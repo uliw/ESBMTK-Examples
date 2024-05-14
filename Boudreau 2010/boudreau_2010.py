@@ -21,7 +21,7 @@ Copyright (C), 2024 Ulrich G. Wortmann & Tina Tsan
 
 
 def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
-    from esbmtk import (
+    from esbmtk import(
         Model,
         Q_,
         GasReservoir,
@@ -30,7 +30,7 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
         build_ct_dict,
         add_carbonate_system_1,
         add_carbonate_system_2,
-        Connect,
+        Species2Species,
         ConnectionProperties,
     )
 
@@ -220,8 +220,14 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
         register=M,
     )
 
+    """ GasExchange connections currently do not support the setup
+    with the ConnectionsProperties class, since they connect CO2 to
+    DIC which fools the automatic species matching logic. As such
+    we use the Species2Species class to create the connection
+    explicitly.
+    """
     pv = "4.8 m/d"  # piston velocity
-    Connect(
+    Species2Species(
         source=M.CO2_At,  # Reservoir
         sink=M.H_b.DIC,  # ReservoirGroup
         species=M.CO2,
@@ -235,7 +241,7 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
         ctype="gasexchange",
     )
 
-    Connect(
+    Species2Species(
         source=M.CO2_At,  # Reservoir
         sink=M.L_b.DIC,  # ReservoirGroup
         species=M.CO2,
