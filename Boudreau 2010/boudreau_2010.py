@@ -228,8 +228,8 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     """
     pv = "4.8 m/d"  # piston velocity
     Species2Species(
-        source=M.CO2_At,  # Reservoir
-        sink=M.H_b.DIC,  # ReservoirGroup
+        source=M.CO2_At,  # Reservoir Species
+        sink=M.H_b.DIC,  # Reservoir Species
         species=M.CO2,
         ref_species=M.H_b.CO2aq,
         solubility=M.H_b.swc.SA_co2,  # float
@@ -242,8 +242,8 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     )
 
     Species2Species(
-        source=M.CO2_At,  # Reservoir
-        sink=M.L_b.DIC,  # ReservoirGroup
+        source=M.CO2_At,  # Reservoir Species
+        sink=M.L_b.DIC,  # Reservoir Species
         species=M.CO2,
         ref_species=M.L_b.CO2aq,
         solubility=M.L_b.swc.SA_co2,  # float
