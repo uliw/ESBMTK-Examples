@@ -1,4 +1,23 @@
-import numpy as np
+""" The ESBMTK implmentation of the Boudreau et al. 2010
+model see https://doi.org/10.1029/2009gb003654
+
+Authors: Uli Wortmann & Tina Tsan
+
+Copyright (C), 2024 Ulrich G. Wortmann & Tina Tsan
+
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
 
 def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
@@ -18,7 +37,7 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     M = Model(
         stop=run_time,  # end time of model
         timestep=time_step,  # time step
-        element=[
+        element=[  # list of elements we consider in the model
             "Carbon",
             "Boron",
             "Hydrogen",
@@ -33,20 +52,15 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
         opt_k_carbonic=13,  # Use Millero 2006
         opt_pH_scale=3,  # 1:total, 3:free scale
         opt_buffers_mode=2,  # carbonate, borate water alkalinity only
-        # parse_model=False,
     )
 
     # -------------------- Set up box parameters ------------------------ #
-    """ boxes are defined by area and depth interval here we use a 
-    dictionary to define the box geometries. The next column is
-    temperature in deg C, followed by pressure in bar the geometry is
-    [upper depth datum, lower depth datum, area percentage], or,
-    as in this case, we give area and volume explicitly.
+    """ Boudreau et al defined their reservoirs by area and and volume, and
+    explicitly assign temperature, pressure and salinity.
     """
-
     box_parameter: dict = {  # name: [[geometry], T, P]
         "H_b": {  # High-Lat Box
-            "g": {"area": "0.5e14m**2", "volume": "1.76e16 m**3"},
+            "g": {"area": "0.5e14m**2", "volume": "1.76e16 m**3"},  # geometry
             "T": 2,  # temperature in C
             "P": 17.6,  # pressure in bar
             "S": 35,  # salinity in psu
@@ -74,7 +88,7 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     If you need box specific initial conditions use the output of
     build_concentration_dicts as starting point, but it is usually
     faster to just run the model to steady state and use this as a
-    starting condition
+    starting condition.
     """
     V_t = 1.76e16 + 2.85e16 + 1.29e18
     DIC_0 = (2.153 * 1.76e16 + 1.952 * 2.85e16 + 2.291 * 1.29e18) / V_t
@@ -92,9 +106,8 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     # ------------------------------ Transport Processes ----------------- #
     # get a list of all species
     species_list: list = list(initial_conditions.keys())
-    # species_list: list = [M.DIC, M.TA]
 
-    """ define the mixing between high latitude box and deep water
+    """define the mixing between high latitude box and deep water
     through a dictionary that specifies the respective source and sink
     reservoirs, connection id,  the connection type, the scaling factor
     and the list of species that will be affected.
@@ -136,10 +149,9 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     create_bulk_connections(connection_dict, M, mt="1:1")
 
     """ Organic matter flux P - 200 Tm/yr
-    POM = Particulate Organic matter. Unlike mix, this is really just a name to keep
-    things organized. Since this model uses a fixed rate we can declare this flux
-    with the rate keyword. Boudreau 2010 only considers the effect on DIC, and ignores
-    the effect of POM on TA.
+    POM = Particulate Organic matter. Since this model uses a fixed rate we
+    can declare this flux with the rate keyword. Boudreau 2010 only considers
+    the effect on DIC, and ignoresthe effect of POM on TA.
 
     Note the "bp" keyword: This specifies that the connection will remove the respective
     species form the source reservoir, but will bypass the addition to the sink
@@ -150,7 +162,6 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     and then creating an explicit connection that describes burial into the sediment.
     """
     M.OM_export = Q_("200 Tmol/a")
-    # M.CaCO3_export = M.OM_export * rain_ratio
     M.CaCO3_export = Q_("60 Tmol/a")
 
     # Fluxes going into deep box
@@ -176,16 +187,16 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     create_bulk_connections(connection_dict, M, mt="1:1")
 
     # -------------------- Carbonate System- virtual reservoir definitions -- #
-    """ To setup carbonate chemistry, one needs to know the export production,
-    and where it ends up. We thus keep two lists one for the surface boxes
+    """ To setup carbonate chemistry, one needs to know the soource adn sink of the
+    export production fluxes. We thus keep two lists one for the surface boxes
     and one for the deep boxes.
     
-    Carbonate system one calculates tracer like CO2aq,  CO3, and H+, for the
+    Carbonate system ` calculates tracer like CO2aq,  CO3, and H+, for the
     surface boxes.
 
-    Carbonate System two calculates the aabove tracers, and additionally
+    Carbonate System ` calculates the above tracers, and additionally
     the critical depth intervals (Saturation, CCD, and snowline), as well
-    as the amount of carbonate that it dissolved. 
+    as the amount of carbonate that it dissolved.
     """
     surface_boxes: list = [M.L_b, M.H_b]
     deep_boxes: list = [M.D_b]
@@ -238,52 +249,7 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
         ctype="gasexchange",
     )
 
-    # Connect(  # CaCO3 weathering
-    #     source=M.Fw.DIC,  # source of flux
-    #     sink=M.L_b.DIC,
-    #     reservoir_ref=M.CO2_At,
-    #     ctype="weathering",
-    #     id="wca",
-    #     scale=1,
-    #     ex=0.2,
-    #     pco2_0="280 ppm",
-    #     rate="12 Tmol/a",
-    #     register=M,
-    # )
-
-    # Connect(  #
-    #     source=M.Fw.TA,  # source of flux
-    #     sink=M.L_b.TA,  # target of flux
-    #     ctype="scale_with_flux",
-    #     ref_flux=M.flux_summary(filter_by="wca", return_list=True)[0],
-    #     scale=2,
-    #     id="wca_ta",
-    # )
-
-    # Connect(
-    #     source=M.Fw.DIC,
-    #     sink=M.L_b.DIC,
-    #     rate="12 Tmol/a",
-    #     register=M,
-    # )
-    # ConnectionProperties(
-    #     source=M.Fw,
-    #     sink=M.L_b,
-    #     rate="12 Tmol/a",
-    #     id="dic_weathering",
-    #     species=[M.DIC],
-    #     ctype="regular",
-    # )
-
-    # ConnectionProperties(
-    #     source=M.Fw,
-    #     sink=M.L_b,
-    #     rate="24 Tmol/a",
-    #     register=M,
-    #     id="ta_Weathering",
-    #     species=[M.TA],
-    #     ctype="regular",
-    # )
+    # create the weathering fluxes
     ConnectionProperties(
         source=M.Fw,
         sink=M.L_b,
@@ -296,68 +262,39 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     return M
 
 
-# this goes at the end of the file
 if __name__ == "__main__":
     from esbmtk import data_summaries
     from esbmtk import carbonate_system_2_pp
 
     run_time = "1000 kyr"
-    time_step = "1000 yr"
+    time_step = "1000 yr"  # this is max timestep
     rain_ratio = 0.3
-    alpha = 0.72
     alpha = 0.6
 
     M = initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step)
 
-    M.read_state(directory="init_data_2")
+    M.read_state(directory="init_data_2")  # get steady state
     M.run()
     # M.save_state(directory="init_data_2")
 
-    # get CaCO3_export in mol/year
+    """ Some of the tracers and critical depth interval data are not
+    part of the ODE model. Rather, we have to calculate them in a
+    post-processing step. CS2 requires the CaCO3 export flux, so we
+    query the model for the number used earlier, and then feed this
+    to the carbonate_system_2_pp which will the missing tracers.
+    """
     CaCO3_export = M.CaCO3_export.to(f"{M.f_unit}").magnitude
     carbonate_system_2_pp(M.D_b, CaCO3_export, 200, 6000)
-
     M.save_data()
 
+    """ Create some plots shiwing the results of the model run.
+    ESBMTk provides the function data_summaries than be used to
+    create a list of ESBMTK objects that is then used as input to
+    the ESBMTK plot() method. This method will plot the respective
+    ESBTMK objects into a common figure.
+    """
     species_names = [M.DIC, M.TA, M.CO3, M.pH, M.zcc, M.zsat, M.zsnow]
     box_names = [M.L_b, M.H_b, M.D_b]
     pl = data_summaries(M, species_names, box_names, M.L_b.DIC)
     pl += [M.CO2_At]
     M.plot(pl, fn="baseline_w_d.pdf")
-
-    # -- test results versus pyCO2sys ---------------- #
-    # update swc parameters to the concentrations at
-    # the end of the model run
-    M.D_b.swc.update_parameters()
-    M.L_b.swc.update_parameters()
-    M.H_b.swc.update_parameters()
-    print()
-    print(f"D_b: swc pH_total = {M.D_b.swc.pH_total:.4f}, M =  {M.D_b.pH.c[-1]:.4f}")
-    print(
-        f"D_B  swc co2aq = {M.D_b.swc.co2aq*1e6:.4f}, M =  {M.D_b.CO2aq.c[-1]*1.e6:.4f}"
-    )
-    print(f"D_b: swc co3 = {M.D_b.swc.co3*1e6:.4f}, M =  {M.D_b.CO3.c[-1]*1.e6:.4f}\n")
-
-    print(
-        f"L_B  swc co2aq = {M.L_b.swc.co2aq*1e6:.4f}, M =  {M.L_b.CO2aq.c[-1]*1.e6:.4f}"
-    )
-    print(f"L_b: swc co3 = {M.L_b.swc.co3*1e6:.4f}, M =  {M.L_b.CO3.c[-1]*1.e6:.4f}\n")
-
-    print(
-        f"H_B  swc co2aq = {M.H_b.swc.co2aq*1e6:.4f}, M =  {M.H_b.CO2aq.c[-1]*1.e6:.4f}"
-    )
-    print(f"H_b: swc co3 = {M.H_b.swc.co3*1e6:.4f}, M =  {M.H_b.CO3.c[-1]*1.e6:.4f}\n")
-
-    # pco2_w =
-    print(f"L_b: pCO2: swc pco2 = {M.L_b.swc.pCO2:.0f}, M =  {M.CO2_At.c[-1]*1.e6:.0f}")
-    print(
-        f"H_b: pCO2: swc pco2 = {M.H_b.swc.pCO2:.0f}, M =  {M.CO2_At.c[-1]*1.e6:.0f}\n"
-    )
-
-    print(f"zsat should = 3715, actual = {M.D_b.zsat.c[-1]:.2f}")
-    print(f"zcc should = 4750, actual = {M.D_b.zcc.c[-1]:.2f}")
-    print(f"zsnow should = 4750, actual = {M.D_b.zsnow.c[-1]:.2f}")
-
-    # print(f"H_b area % = {M.H_b.area/M.hyp.area_dz(-200, -4152)")
-    # M.hyp.show_data(1000,-6000)
-    M.hyp.read_data()
