@@ -1,8 +1,3 @@
-- [ESBMTK Examples](#org9b1ae54)
-
-
-<a id="org9b1ae54"></a>
-
 # ESBMTK Examples
 
 This repo holds example code for the [Earth Science Box Modeling Toolkit.](https://github.com/uliw/esbmtk) Please see the <https://esbmtk.readthedocs.io/en/latest/> for ESBMTK installation and usage instruction.
