@@ -1,7 +1,7 @@
 from __future__ import annotations
 from numpy import array as npa
 from numba import njit
-from esbmtk import carbonate_system_1 ,gas_exchange ,carbonate_system_2
+from esbmtk import carbonate_system_1 ,carbonate_system_2 ,gas_exchange
 
 # @njit(fastmath=True)
 def eqs(t, R, M, gpt, toc, area_table, area_dz_table, Csat_table) -> list:
@@ -42,26 +42,26 @@ def eqs(t, R, M, gpt, toc, area_table, area_dz_table, Csat_table) -> list:
 
 
 # ---------------- write all flux equations ------------------- #
-        M_CG_H_b_to_D_b_DIC_mix_down__F = toc[6] * R[0]
-        M_CG_H_b_to_D_b_TA_mix_down__F = toc[8] * R[1]
-        M_CG_D_b_to_H_b_DIC_mix_up__F = toc[10] * R[4]
-        M_CG_D_b_to_H_b_TA_mix_up__F = toc[12] * R[5]
-        M_CG_L_b_to_H_b_DIC_thc__F = toc[14] * R[2]
-        M_CG_L_b_to_H_b_TA_thc__F = toc[16] * R[3]
-        M_CG_H_b_to_D_b_DIC_thc__F = toc[18] * R[0]
-        M_CG_H_b_to_D_b_TA_thc__F = toc[20] * R[1]
-        M_CG_D_b_to_L_b_DIC_thc__F = toc[22] * R[4]
-        M_CG_D_b_to_L_b_TA_thc__F = toc[24] * R[5]
-        M_CG_L_b_to_D_b_DIC_POM__F = toc[27]
-        M_CG_L_b_to_D_b_PIC_DIC__F = toc[29]
-        M_CG_L_b_to_D_b_PIC_TA__F = toc[31]
-        M_CG_Fw_to_L_b_DIC_weathering__F = toc[42]
-        M_CG_Fw_to_L_b_TA_weathering__F = toc[44]
+        M_CG_H_b_to_D_b_mix_down_DIC_mix_down__F = toc[6] * R[0]
+        M_CG_H_b_to_D_b_mix_down_TA_mix_down__F = toc[8] * R[1]
+        M_CG_D_b_to_H_b_mix_up_DIC_mix_up__F = toc[10] * R[4]
+        M_CG_D_b_to_H_b_mix_up_TA_mix_up__F = toc[12] * R[5]
+        M_CG_L_b_to_H_b_thc_DIC_thc__F = toc[14] * R[2]
+        M_CG_L_b_to_H_b_thc_TA_thc__F = toc[16] * R[3]
+        M_CG_H_b_to_D_b_thc_DIC_thc__F = toc[18] * R[0]
+        M_CG_H_b_to_D_b_thc_TA_thc__F = toc[20] * R[1]
+        M_CG_D_b_to_L_b_thc_DIC_thc__F = toc[22] * R[4]
+        M_CG_D_b_to_L_b_thc_TA_thc__F = toc[24] * R[5]
+        M_CG_L_b_to_D_b_POM_DIC_POM__F = toc[27]
+        M_CG_L_b_to_D_b_PIC_DIC_PIC_DIC__F = toc[29]
+        M_CG_L_b_to_D_b_PIC_TA_PIC_TA__F = toc[31]
+        M_CG_Fw_to_L_b_weathering_DIC_weathering__F = toc[42]
+        M_CG_Fw_to_L_b_weathering_TA_weathering__F = toc[44]
 
 # ---------------- write computed reservoir equations -------- #
 # that do depend on fluxes
         M_D_b_DIC_db_cs2, M_D_b_TA_db_cs2, dCdt_M_D_b_Hplus, dCdt_M_D_b_zsnow = carbonate_system_2(
-            M_CG_L_b_to_D_b_PIC_DIC__F,
+            M_CG_L_b_to_D_b_PIC_DIC_PIC_DIC__F,
             (R[4]),
             (R[5]),
             (R[2]),
@@ -75,50 +75,50 @@ def eqs(t, R, M, gpt, toc, area_table, area_dz_table, Csat_table) -> list:
 
 # ---------------- write regular reservoir equations ------------ #
         dCdt_M_H_b_DIC = (
-            - M_CG_H_b_to_D_b_DIC_mix_down__F
-            + M_CG_D_b_to_H_b_DIC_mix_up__F
-            + M_CG_L_b_to_H_b_DIC_thc__F
-            - M_CG_H_b_to_D_b_DIC_thc__F
+            - M_CG_H_b_to_D_b_mix_down_DIC_mix_down__F
+            + M_CG_D_b_to_H_b_mix_up_DIC_mix_up__F
+            + M_CG_L_b_to_H_b_thc_DIC_thc__F
+            - M_CG_H_b_to_D_b_thc_DIC_thc__F
             + M_C_CO2_At_to_H_b_CO2_H_b__F
         )/toc[0]
 
         dCdt_M_H_b_TA = (
-            - M_CG_H_b_to_D_b_TA_mix_down__F
-            + M_CG_D_b_to_H_b_TA_mix_up__F
-            + M_CG_L_b_to_H_b_TA_thc__F
-            - M_CG_H_b_to_D_b_TA_thc__F
+            - M_CG_H_b_to_D_b_mix_down_TA_mix_down__F
+            + M_CG_D_b_to_H_b_mix_up_TA_mix_up__F
+            + M_CG_L_b_to_H_b_thc_TA_thc__F
+            - M_CG_H_b_to_D_b_thc_TA_thc__F
         )/toc[1]
 
         dCdt_M_L_b_DIC = (
-            - M_CG_L_b_to_H_b_DIC_thc__F
-            + M_CG_D_b_to_L_b_DIC_thc__F
-            - M_CG_L_b_to_D_b_DIC_POM__F
-            - M_CG_L_b_to_D_b_PIC_DIC__F
+            - M_CG_L_b_to_H_b_thc_DIC_thc__F
+            + M_CG_D_b_to_L_b_thc_DIC_thc__F
+            - M_CG_L_b_to_D_b_POM_DIC_POM__F
+            - M_CG_L_b_to_D_b_PIC_DIC_PIC_DIC__F
             + M_C_CO2_At_to_L_b_CO2_L_b__F
-            + M_CG_Fw_to_L_b_DIC_weathering__F
+            + M_CG_Fw_to_L_b_weathering_DIC_weathering__F
         )/toc[2]
 
         dCdt_M_L_b_TA = (
-            - M_CG_L_b_to_H_b_TA_thc__F
-            + M_CG_D_b_to_L_b_TA_thc__F
-            - M_CG_L_b_to_D_b_PIC_TA__F
-            + M_CG_Fw_to_L_b_TA_weathering__F
+            - M_CG_L_b_to_H_b_thc_TA_thc__F
+            + M_CG_D_b_to_L_b_thc_TA_thc__F
+            - M_CG_L_b_to_D_b_PIC_TA_PIC_TA__F
+            + M_CG_Fw_to_L_b_weathering_TA_weathering__F
         )/toc[3]
 
         dCdt_M_D_b_DIC = (
-            + M_CG_H_b_to_D_b_DIC_mix_down__F
-            - M_CG_D_b_to_H_b_DIC_mix_up__F
-            + M_CG_H_b_to_D_b_DIC_thc__F
-            - M_CG_D_b_to_L_b_DIC_thc__F
-            + M_CG_L_b_to_D_b_DIC_POM__F
+            + M_CG_H_b_to_D_b_mix_down_DIC_mix_down__F
+            - M_CG_D_b_to_H_b_mix_up_DIC_mix_up__F
+            + M_CG_H_b_to_D_b_thc_DIC_thc__F
+            - M_CG_D_b_to_L_b_thc_DIC_thc__F
+            + M_CG_L_b_to_D_b_POM_DIC_POM__F
             + M_D_b_DIC_db_cs2
         )/toc[4]
 
         dCdt_M_D_b_TA = (
-            + M_CG_H_b_to_D_b_TA_mix_down__F
-            - M_CG_D_b_to_H_b_TA_mix_up__F
-            + M_CG_H_b_to_D_b_TA_thc__F
-            - M_CG_D_b_to_L_b_TA_thc__F
+            + M_CG_H_b_to_D_b_mix_down_TA_mix_down__F
+            - M_CG_D_b_to_H_b_mix_up_TA_mix_up__F
+            + M_CG_H_b_to_D_b_thc_TA_thc__F
+            - M_CG_D_b_to_L_b_thc_TA_thc__F
             + M_D_b_TA_db_cs2
         )/toc[5]
 

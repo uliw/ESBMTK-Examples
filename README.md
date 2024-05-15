@@ -10,5 +10,9 @@ git clone git@github.com:uliw/ESBMTK-Examples.git
 
 or as zipfile via <https://github.com/uliw/ESBMTK-Examples/archive/refs/heads/main.zip>
 
--   `Examples from the Manual` contains the example code that is shown in the manual
+-   `Examples from the Manual` contains the example code that is shown in the manual. For details and explanations see <https://esbmtk.readthedocs.io/en/latest/>
+    -   `po4_1.py` A simple 2-box P-cycle example
+    -   `po4_2.py` A simple 2-box P-cycle example, demonstrating how to force a model with the signal class
+    -   `po4_3.py` A simple 2-box P-cycle example demonstrating the use of mutiple species
+    -   `po4_4.py` A simple 2-box P-cycle example demonstrating how to add isotope calculations
 -   `Boudreau 2010`" contains the ESBMTK implementation of the Boudreau et al. 2010 model see <https://doi.org/10.1029/2009gb003654>
