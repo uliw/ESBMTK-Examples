@@ -215,7 +215,8 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     GasReservoir(
         name="CO2_At",
         species=M.CO2,
-        reservoir_mass="1.833E20 mol",
+        # reservoir_mass="1.833E20 mol",
+        reservoir_mass="1.778E20 mol",
         species_ppm="280 ppm",
         register=M,
     )
