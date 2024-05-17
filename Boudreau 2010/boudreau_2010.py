@@ -19,7 +19,6 @@ Copyright (C), 2024 Ulrich G. Wortmann & Tina Tsan
      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-
 def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     from esbmtk import(
         Model,
@@ -48,7 +47,6 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
         mass_unit="mol",
         volume_unit="l",
         concentration_unit="mol/kg",
-        bio_pump_functions=0,
         opt_k_carbonic=13,  # Use Millero 2006
         opt_pH_scale=3,  # 1:total, 3:free scale
         opt_buffers_mode=2,  # carbonate, borate water alkalinity only
@@ -289,7 +287,7 @@ if __name__ == "__main__":
     to the carbonate_system_2_pp which will the missing tracers.
     """
     CaCO3_export = M.CaCO3_export.to(f"{M.f_unit}").magnitude
-    carbonate_system_2_pp(M.D_b, CaCO3_export, 200, 6000)
+    carbonate_system_2_pp(M.D_b, CaCO3_export, 200, 9000)
     M.save_data()
 
     """ Create some plots shiwing the results of the model run.
@@ -298,8 +296,8 @@ if __name__ == "__main__":
     the ESBMTK plot() method. This method will plot the respective
     ESBTMK objects into a common figure.
     """
-    species_names = [M.DIC, M.TA, M.CO3, M.pH, M.zcc, M.zsat, M.zsnow]
+    species_names = [M.DIC, M.TA, M.pH ,M.CO3, M.zcc, M.zsat, M.zsnow]
     box_names = [M.L_b, M.H_b, M.D_b]
     pl = data_summaries(M, species_names, box_names, M.L_b.DIC)
     pl += [M.CO2_At]
-    M.plot(pl, fn="baseline_w_d.pdf")
+    M.plot(pl, fn="baseline_w_d.pdf", title="ESBMTK Preindustrial Steady State")
