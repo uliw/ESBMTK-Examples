@@ -28,7 +28,7 @@ import numpy as np
 run_time = "4000 yr"
 time_step = "1 month"
 rain_ratio = 0.3
-alpha = 0.6
+alpha = 0.59
 
 # import the base model
 M = bd.initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step)
@@ -51,7 +51,7 @@ M.C_CP = Species2Species(
     signal=M.CP,  # list of processes
 )
 
-M.read_state(directory="init_data_2")  # read pre-industrial steady state
+M.read_state(directory="init_data_3")  # read pre-industrial steady state
 M.run()
 M.save_data()
 

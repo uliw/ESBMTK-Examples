@@ -19,8 +19,9 @@ Copyright (C), 2024 Ulrich G. Wortmann & Tina Tsan
      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+
 def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
-    from esbmtk import(
+    from esbmtk import (
         Model,
         Q_,
         GasReservoir,
@@ -113,12 +114,12 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     connection_dict = {
         "H_b_to_D_b@mix_down": {  # source_to_sink@id
             "ty": "scale_with_concentration",  # type
-            "sc": Q_("30 Sverdrup") * M.H_b.swc.density / 1000,  # scale
+            "sc": Q_("30 Sverdrup"),  # * M.H_b.swc.density / 1000,  # scale
             "sp": species_list,
         },
         "D_b_to_H_b@mix_up": {
             "ty": "scale_with_concentration",
-            "sc": Q_("30 Sverdrup") * M.D_b.swc.density / 1000,
+            "sc": Q_("30 Sverdrup"),  # * M.D_b.swc.density / 1000,
             "sp": species_list,
         },
     }
@@ -131,11 +132,11 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     data into a connection_dictionary.
     """
     conveyor_belt_transport = {  # advection
-        "L_b_to_H_b@thc": Q_("25 Sverdrup") * M.L_b.swc.density / 1000,
+        "L_b_to_H_b@thc": Q_("25 Sverdrup"),  # * M.L_b.swc.density / 1000,
         # Downwelling
-        "H_b_to_D_b@thc": Q_("25 Sverdrup") * M.H_b.swc.density / 1000,
+        "H_b_to_D_b@thc": Q_("25 Sverdrup"),  # * M.H_b.swc.density / 1000,
         # Upwelling
-        "D_b_to_L_b@thc": Q_("25 Sverdrup") * M.D_b.swc.density / 1000,
+        "D_b_to_L_b@thc": Q_("25 Sverdrup"),  # * M.D_b.swc.density / 1000,
     }
     connection_dict: dict = build_ct_dict(
         conveyor_belt_transport,  # dict with scaling factors
@@ -206,7 +207,7 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
         r_db=deep_boxes,  # list of reservoir groups
         r_sb=surface_boxes,  # list of reservoir groups
         carbonate_export_fluxes=ef,  # list of export fluxes
-        z0=-200,  # depth of shelf
+        z0=-350,  # depth of shelf
         alpha=alpha,  # dissolution coefficient
     )
     # -------------------- Atmosphere -------------------------
@@ -266,19 +267,21 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
 
 
 if __name__ == "__main__":
-    from esbmtk import data_summaries
+    from math import log10
+    from esbmtk import data_summaries, ExternalData
     from esbmtk import carbonate_system_2_pp
 
     run_time = "1000 kyr"
-    time_step = "1000 yr"  # this is max timestep
+    time_step = "100 yr"  # this is max timestep
     rain_ratio = 0.3
-    alpha = 0.6
+    # alpha = 0.572
+    alpha = 0.59
 
     M = initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step)
 
-    M.read_state(directory="init_data_2")  # get steady state
+    M.read_state(directory="init_data_3")  # get steady state
     M.run()
-    # M.save_state(directory="init_data_2")
+    M.save_state(directory="init_data_3")
 
     """ Some of the tracers and critical depth interval data are not
     part of the ODE model. Rather, we have to calculate them in a
@@ -287,7 +290,7 @@ if __name__ == "__main__":
     to the carbonate_system_2_pp which will the missing tracers.
     """
     CaCO3_export = M.CaCO3_export.to(f"{M.f_unit}").magnitude
-    carbonate_system_2_pp(M.D_b, CaCO3_export, 200, 9000)
+    carbonate_system_2_pp(M.D_b, CaCO3_export, 350, 9000)
     M.save_data()
 
     """ Create some plots shiwing the results of the model run.
@@ -296,8 +299,51 @@ if __name__ == "__main__":
     the ESBMTK plot() method. This method will plot the respective
     ESBTMK objects into a common figure.
     """
-    species_names = [M.DIC, M.TA, M.pH ,M.CO3, M.zcc, M.zsat, M.zsnow]
+    species_names = [M.DIC, M.TA, M.pH, M.CO3, M.zcc, M.zsat, M.zsnow]
     box_names = [M.L_b, M.H_b, M.D_b]
     pl = data_summaries(M, species_names, box_names, M.L_b.DIC)
     pl += [M.CO2_At]
-    M.plot(pl, fn="baseline_w_d.pdf", title="ESBMTK Preindustrial Steady State")
+    # plot the model results, but do not render the plot
+    plt, fig, axs = M.plot(
+        pl,
+        fn="steady_state.pdf",
+        title="ESBMTK Preindustrial Steady State",
+        no_show=True,
+    )
+
+    # import the digitized data and create data fields to compare the
+    # results. Names must match with filenames
+    data = "dic_l dic_h dic_d TA_l TA_h TA_d hplus_l hplus_h hplus_d".split(" ")
+    # data = data + " zsat zcc zsnow EL EH pco2 Cpulse"
+    for n in data:
+        ExternalData(
+            name=f"ef_{n}",
+            filename=f"digitized/{n}.csv",
+            legend=n,
+            register=M,
+        )
+
+    # Add digitized data to model results
+    v = 0
+    for i in range(3):
+        for j in range(3):
+            d = getattr(M, f"ef_{data[v]}")
+            if "hplus" in data[v]:
+                axs[0, i].scatter(1, -log10(d.y[0]), color=f"C{j}")
+            else:
+                axs[0, i].scatter(1, d.y[0], color=f"C{j}")
+            v = v + 1
+            axs[0, i].set_ylim(auto=True)
+    # CO32- values after Boudreau et al. 2010, Tab 3
+    axs[1, 0].scatter(1, 234e-6, color="C0")
+    axs[1, 0].scatter(1, 138e-6, color="C1")
+    axs[1, 0].scatter(1, 86e-6, color="C2")
+    # zcc, zsat, zsnow values after Boudreau et al. 2010, Tab 3
+    axs[1, 1].scatter(1, 4750, color="C0")  # zcc
+    axs[1, 1].set_ylim([4700, 4900])  # zsat
+    axs[1, 2].scatter(1, 3715, color="C0")
+    axs[1, 2].set_ylim([3600,3800])
+    axs[2, 0].scatter(1, 4750, color="C0")
+    fig.tight_layout()
+    plt.show(block=False)
+    fig.savefig("steady_state.pdf")
