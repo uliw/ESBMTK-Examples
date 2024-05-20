@@ -57,7 +57,7 @@ M.save_data()
 
 # get CaCO3_export in mol/year and post process the data
 CaCO3_export = M.CaCO3_export.to(f"{M.f_unit}").magnitude
-carbonate_system_2_pp(M.D_b, CaCO3_export, 200, 9000)
+carbonate_system_2_pp(M.D_b, CaCO3_export, 350, 9000)
 
 # get the air sea gas-exchange fluxes
 GEX_L = gas_exchange_fluxes(M.L_b.DIC, M.CO2_At, "4.8 m/d")
