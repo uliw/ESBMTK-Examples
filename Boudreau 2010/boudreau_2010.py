@@ -207,7 +207,7 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
         r_db=deep_boxes,  # list of reservoir groups
         r_sb=surface_boxes,  # list of reservoir groups
         carbonate_export_fluxes=ef,  # list of export fluxes
-        z0=-350,  # depth of shelf
+        z0=-200,  # depth of shelf
         alpha=alpha,  # dissolution coefficient
     )
     # -------------------- Atmosphere -------------------------
@@ -275,10 +275,9 @@ if __name__ == "__main__":
     time_step = "100 yr"  # this is max timestep
     rain_ratio = 0.3
     # alpha = 0.572
-    alpha = 0.59
+    alpha = 0.6
 
     M = initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step)
-
     M.read_state(directory="init_data_3")  # get steady state
     M.run()
     M.save_state(directory="init_data_3")
@@ -290,7 +289,7 @@ if __name__ == "__main__":
     to the carbonate_system_2_pp which will the missing tracers.
     """
     CaCO3_export = M.CaCO3_export.to(f"{M.f_unit}").magnitude
-    carbonate_system_2_pp(M.D_b, CaCO3_export, 350, 9000)
+    carbonate_system_2_pp(M.D_b, CaCO3_export, 200, 10999)
     M.save_data()
 
     """ Create some plots shiwing the results of the model run.
@@ -333,7 +332,7 @@ if __name__ == "__main__":
             else:
                 axs[0, i].scatter(1, d.y[0], color=f"C{j}")
             v = v + 1
-            axs[0, i].set_ylim(auto=True)
+
     # CO32- values after Boudreau et al. 2010, Tab 3
     axs[1, 0].scatter(1, 234e-6, color="C0")
     axs[1, 0].scatter(1, 138e-6, color="C1")
@@ -342,7 +341,7 @@ if __name__ == "__main__":
     axs[1, 1].scatter(1, 4750, color="C0")  # zcc
     axs[1, 1].set_ylim([4700, 4900])  # zsat
     axs[1, 2].scatter(1, 3715, color="C0")
-    axs[1, 2].set_ylim([3600,3800])
+    axs[1, 2].set_ylim([3600, 3800])
     axs[2, 0].scatter(1, 4750, color="C0")
     fig.tight_layout()
     plt.show(block=False)
