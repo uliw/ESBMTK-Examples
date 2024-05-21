@@ -18,12 +18,11 @@ Copyright (C), 2024 Ulrich G. Wortmann & Tina Tsan
      You should have received a copy of the GNU General Public License
      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-
-import boudreau_2010 as bd
+import numpy as np
 from esbmtk import Source, Signal, Species2Species, DataField, ExternalData
 from esbmtk import carbonate_system_2_pp
 from esbmtk import gas_exchange_fluxes
-import numpy as np
+import boudreau_2010 as bd
 
 run_time = "4000 yr"
 time_step = "1 month"
