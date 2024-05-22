@@ -159,13 +159,15 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     that is dissolved and add this to the deep-box. The amount that buried is thus implicit.
     This is equivalent to export all CaCO3 into the deeb-box (i.e. bp="None"),
     and then creating an explicit connection that describes burial into the sediment.
+    Since these a fixed rates, they could also be combined into one flux for DIC and
+    one flux for TA.
     """
     M.OM_export = Q_("200 Tmol/a")
     M.CaCO3_export = Q_("60 Tmol/a")
 
     # Fluxes going into deep box
     connection_dict = {
-        "L_b_to_D_b@POM": {  # organic matter
+        "L_b_to_D_b@POM": {  # DIC from organic matter
             "sp": M.DIC,
             "ty": "Regular",
             "ra": M.OM_export,
