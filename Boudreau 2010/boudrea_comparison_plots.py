@@ -36,7 +36,7 @@ M = bd.initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step)
 M.CP = Signal(
     name="CP",  # name of signal
     species=M.CO2,  # species
-    filename="ISA92a-scenario.csv",
+    filename="IS92a-scenario.csv",
     scale=0.9,
     register=M,
 )
@@ -78,7 +78,7 @@ DataField(
     name="df_pulse",
     x1_data=[M.time, M.ef_Cpulse.x],
     y1_data=[M.CP.nf.m, M.ef_Cpulse.y],
-    y1_label=["Signal", "ISA92a"],
+    y1_label=["Signal", "IS92a"],
     y1_color="C0 C1 ".split(" "),
     y1_style="solid dotted".split(" "),
     y1_legend="C [mol/year]",

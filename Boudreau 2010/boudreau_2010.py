@@ -276,7 +276,6 @@ if __name__ == "__main__":
     run_time = "1000 kyr"
     time_step = "100 yr"  # this is max timestep
     rain_ratio = 0.3
-    # alpha = 0.572
     alpha = 0.6
 
     M = initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step)
@@ -326,7 +325,7 @@ if __name__ == "__main__":
 
     # Add digitized data to model results
     v = 0
-    for i in range(3):
+    for i in range(2):
         for j in range(3):
             d = getattr(M, f"ef_{data[v]}")
             if "hplus" in data[v]:
@@ -336,15 +335,16 @@ if __name__ == "__main__":
             v = v + 1
 
     # CO32- values after Boudreau et al. 2010, Tab 3
-    axs[1, 0].scatter(1, 234e-6, color="C0")
-    axs[1, 0].scatter(1, 138e-6, color="C1")
-    axs[1, 0].scatter(1, 86e-6, color="C2")
-    # zcc, zsat, zsnow values after Boudreau et al. 2010, Tab 3
-    axs[1, 1].scatter(1, 4750, color="C0")  # zcc
-    axs[1, 1].set_ylim([4700, 4900])  # zsat
-    axs[1, 2].scatter(1, 3715, color="C0")
-    axs[1, 2].set_ylim([3600, 3800])
-    axs[2, 0].scatter(1, 4750, color="C0")
+    axs[1, 1].scatter(1, 234e-6, color="C0")
+    axs[1, 1].scatter(1, 138e-6, color="C1")
+    axs[1, 1].scatter(1, 86e-6, color="C2")
+    # # zcc, zsat, zsnow values after Boudreau et al. 2010, Tab 3
+    axs[2, 0].scatter(1, 4750, color="C0")  # zcc
+    axs[2, 0].set_ylim([4700, 4900])  
+    axs[2, 1].scatter(1, 3715, color="C0") # zsat
+    axs[2, 1].set_ylim([3600, 3800])
+    axs[2, 1].set_title("zsat") # not sure why this is needed
+    axs[3, 0].scatter(1, 4750, color="C0") # zsnow
     fig.tight_layout()
     plt.show(block=False)
     fig.savefig("steady_state.pdf")
