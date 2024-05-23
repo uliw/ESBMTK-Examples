@@ -24,7 +24,7 @@ from esbmtk import carbonate_system_2_pp
 from esbmtk import gas_exchange_fluxes
 import boudreau_2010 as bd
 
-run_time = "4000 yr"
+run_time = "3800 yr"
 time_step = "1 month"
 rain_ratio = 0.3
 alpha = 0.6
@@ -37,7 +37,7 @@ M.CP = Signal(
     name="CP",  # name of signal
     species=M.CO2,  # species
     filename="IS92a-scenario.csv",
-    scale=0.9,
+    scale=0.877, # required to match the total carbon release
     register=M,
 )
 
@@ -82,6 +82,7 @@ DataField(
     y1_color="C0 C1 ".split(" "),
     y1_style="solid dotted".split(" "),
     y1_legend="C [mol/year]",
+    title="g)",
     register=M,
 )
 
@@ -93,6 +94,7 @@ DataField(
     y1_color="C0 C1 C0 C1 ".split(" "),
     y1_style="solid solid dotted dotted".split(" "),
     y1_legend="Gas Exchange Flux [mol/yr]",
+    title="d)",
     register=M,
 )
 
@@ -111,6 +113,7 @@ DataField(
     y1_legend="DIC [mmol/L]",
     y1_color="C0 C1 C2 C0 C1 C2".split(" "),
     y1_style="solid solid solid dotted dotted dotted".split(" "),
+    title="a)",
     register=M,
 )
 
@@ -129,6 +132,7 @@ DataField(
     y1_color="C0 C1 C2 C0 C1 C2".split(" "),
     y1_style="solid solid solid dotted dotted dotted".split(" "),
     y1_legend="TA [mmol/L]",
+    title="b)",
     register=M,
 )
 
@@ -148,6 +152,7 @@ DataField(
     y1_style="solid solid solid dotted dotted dotted".split(" "),
     y1_legend="pH",
     register=M,
+    title="c)",
 )
 
 DataField(
@@ -165,6 +170,7 @@ DataField(
     y1_color="C0 C1 C2 C0 C1 C2".split(" "),
     y1_style="solid solid solid dotted dotted dotted".split(" "),
     y1_legend="Depth (m)",
+     title="e)",
     register=M,
 )
 
@@ -181,6 +187,7 @@ DataField(
     y1_color="C0 C1 C0 C1".split(" "),
     y1_style="solid solid dotted dotted".split(" "),
     y1_legend="Depth (m)",
+    title="h)",
     register=M,
 )
 
@@ -192,6 +199,7 @@ DataField(
     y1_style="solid dotted".split(" "),
     y1_label="CO2 d_CO2".split(" "),
     y1_legend="ppm",
+    title="f)",
     register=M,
 )
 
