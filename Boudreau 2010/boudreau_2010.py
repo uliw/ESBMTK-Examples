@@ -299,7 +299,7 @@ if __name__ == "__main__":
     the ESBMTK plot() method. This method will plot the respective
     ESBTMK objects into a common figure.
     """
-    
+
     species_names = [M.DIC, M.TA, M.pH, M.CO3, M.zcc, M.zsat, M.zsnow]
     box_names = [M.L_b, M.H_b, M.D_b]
     pl = data_summaries(M, species_names, box_names, M.L_b.DIC)
@@ -347,3 +347,16 @@ if __name__ == "__main__":
     for i, n in enumerate(data):
         d = data[i]
         print(f"Delta {m[i].full_name} = {(m[i].c[0] - d)*1e6:.2f} [umol/kg]")
+
+   # Print a table with the equilibrium constants for each box
+    ks = "K0, K1, K2, KW, KB"
+    kl = ks.split(", ")
+    rl = [M.L_b, M.H_b, M.D_b]
+    print(f"\nBox, {ks}")
+    for b in rl:
+        print(f"{b.name}, ", end="")
+        for k in kl:
+            v = getattr(b.swc, k)
+            print(f"{v:.2e}, ", end="")
+        print()
+        
