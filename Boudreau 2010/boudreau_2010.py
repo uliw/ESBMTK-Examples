@@ -340,11 +340,17 @@ if __name__ == "__main__":
     axs[1, 1].scatter(1, 86e-6, color="C2")
     # # zcc, zsat, zsnow values after Boudreau et al. 2010, Tab 3
     axs[2, 0].scatter(1, 4750, color="C0")  # zcc
-    axs[2, 0].set_ylim([4700, 4900])  
-    axs[2, 1].scatter(1, 3715, color="C0") # zsat
+    axs[2, 0].set_ylim([4700, 4900])
+    axs[2, 1].scatter(1, 3715, color="C0")  # zsat
     axs[2, 1].set_ylim([3600, 3800])
-    axs[2, 1].set_title("zsat") # not sure why this is needed
-    axs[3, 0].scatter(1, 4750, color="C0") # zsnow
+    axs[2, 1].set_title("zsat")  # not sure why this is needed
+    axs[3, 0].scatter(1, 4750, color="C0")  # zsnow
     fig.tight_layout()
     plt.show(block=False)
     fig.savefig("steady_state.pdf")
+
+s = "dic_l TA_l dic_h TA_h dic_d TA_d".split(" ")
+m = [M.L_b.DIC, M.L_b.TA, M.H_b.DIC, M.H_b.TA, M.D_b.DIC, M.D_b.TA]
+for i, n in enumerate(s):
+    d = getattr(M, f"ef_{s[i]}")
+    print(f"D_{n} = {(m[i].c[0] - d.y[0])*1e6:.2f} [umol/kg]")
