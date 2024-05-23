@@ -114,12 +114,12 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     connection_dict = {
         "H_b_to_D_b@mix_down": {  # source_to_sink@id
             "ty": "scale_with_concentration",  # type
-            "sc": Q_("30 Sverdrup"),  # * M.H_b.swc.density / 1000,  # scale
+            "sc": Q_("30 Sverdrup"),
             "sp": species_list,
         },
         "D_b_to_H_b@mix_up": {
             "ty": "scale_with_concentration",
-            "sc": Q_("30 Sverdrup"),  # * M.D_b.swc.density / 1000,
+            "sc": Q_("30 Sverdrup"),
             "sp": species_list,
         },
     }
@@ -132,11 +132,11 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     data into a connection_dictionary.
     """
     conveyor_belt_transport = {  # advection
-        "L_b_to_H_b@thc": Q_("25 Sverdrup"),  # * M.L_b.swc.density / 1000,
+        "L_b_to_H_b@thc": Q_("25 Sverdrup"),
         # Downwelling
-        "H_b_to_D_b@thc": Q_("25 Sverdrup"),  # * M.H_b.swc.density / 1000,
+        "H_b_to_D_b@thc": Q_("25 Sverdrup"),
         # Upwelling
-        "D_b_to_L_b@thc": Q_("25 Sverdrup"),  # * M.D_b.swc.density / 1000,
+        "D_b_to_L_b@thc": Q_("25 Sverdrup"),
     }
     connection_dict: dict = build_ct_dict(
         conveyor_belt_transport,  # dict with scaling factors
@@ -299,6 +299,7 @@ if __name__ == "__main__":
     the ESBMTK plot() method. This method will plot the respective
     ESBTMK objects into a common figure.
     """
+    
     species_names = [M.DIC, M.TA, M.pH, M.CO3, M.zcc, M.zsat, M.zsnow]
     box_names = [M.L_b, M.H_b, M.D_b]
     pl = data_summaries(M, species_names, box_names, M.L_b.DIC)
@@ -311,28 +312,19 @@ if __name__ == "__main__":
         no_show=True,
     )
 
-    # import the digitized data and create data fields to compare the
-    # results. Names must match with filenames
-    data = "dic_l dic_h dic_d TA_l TA_h TA_d hplus_l hplus_h hplus_d".split(" ")
-    # data = data + " zsat zcc zsnow EL EH pco2 Cpulse"
-    for n in data:
-        ExternalData(
-            name=f"ef_{n}",
-            filename=f"digitized/{n}.csv",
-            legend=n,
-            register=M,
-        )
-
+    # add comparisons with published data
+    # data = "dic_l dic_h dic_d TA_l TA_h TA_d hplus_l hplus_h hplus_d".split(" ")
+    data = [1952e-6, 2153e-6, 2291e-6, 2288e-6, 2345e-6, 2399e-6]
     # Add digitized data to model results
     v = 0
+    u = 0
     for i in range(2):
         for j in range(3):
-            d = getattr(M, f"ef_{data[v]}")
-            if "hplus" in data[v]:
-                axs[0, i].scatter(1, -log10(d.y[0]), color=f"C{j}")
-            else:
-                axs[0, i].scatter(1, d.y[0], color=f"C{j}")
-            v = v + 1
+            d = data[u]
+            axs[0, i].scatter(10, d, color=f"C{j}")
+            u = u + 1
+        axs[v, i].autoscale(enable=None, axis="y")
+        axs[v, i].autoscale()
 
     # CO32- values after Boudreau et al. 2010, Tab 3
     axs[1, 1].scatter(1, 234e-6, color="C0")
@@ -345,12 +337,13 @@ if __name__ == "__main__":
     axs[2, 1].set_ylim([3600, 3800])
     axs[2, 1].set_title("zsat")  # not sure why this is needed
     axs[3, 0].scatter(1, 4750, color="C0")  # zsnow
+    axs[3, 0].set_ylim([4700, 4900])
     fig.tight_layout()
     plt.show(block=False)
     fig.savefig("steady_state.pdf")
 
-s = "dic_l TA_l dic_h TA_h dic_d TA_d".split(" ")
-m = [M.L_b.DIC, M.L_b.TA, M.H_b.DIC, M.H_b.TA, M.D_b.DIC, M.D_b.TA]
-for i, n in enumerate(s):
-    d = getattr(M, f"ef_{s[i]}")
-    print(f"D_{n} = {(m[i].c[0] - d.y[0])*1e6:.2f} [umol/kg]")
+    m = [M.L_b.DIC, M.L_b.TA, M.H_b.DIC, M.H_b.TA, M.D_b.DIC, M.D_b.TA]
+    data = [1952e-6, 2288e-6, 2153e-6, 2345e-6, 2291e-6, 2399e-6]
+    for i, n in enumerate(data):
+        d = data[i]
+        print(f"Delta {m[i].full_name} = {(m[i].c[0] - d)*1e6:.2f} [umol/kg]")
