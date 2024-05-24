@@ -348,15 +348,16 @@ if __name__ == "__main__":
         d = data[i]
         print(f"Delta {m[i].full_name} = {(m[i].c[0] - d)*1e6:.2f} [umol/kg]")
 
-   # Print a table with the equilibrium constants for each box
+    # Print a table with the equilibrium constants for each box
     ks = "K0, K1, K2, KW, KB"
     kl = ks.split(", ")
     rl = [M.L_b, M.H_b, M.D_b]
-    print(f"\nBox, {ks}")
+    print(f"\nBox, {ks}, DIC[\mu{{}}mol/kg], TA[\mu{{}}mol/kg]")
     for b in rl:
         print(f"{b.name}, ", end="")
         for k in kl:
             v = getattr(b.swc, k)
-            print(f"{v:.2e}, ", end="")
-        print()
-        
+            print(f"{v:.4e}, ", end="")
+        dic = b.DIC.c[-1] * 1e6
+        ta = b.TA.c[-1] * 1e6
+        print(f"{dic:.0f}, {ta:.0f}")
