@@ -36,7 +36,7 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
 
     M = Model(
         stop=run_time,  # end time of model
-        timestep=time_step,  # time step
+        max_timestep=time_step,  # time step
         element=[  # list of elements we consider in the model
             "Carbon",
             "Boron",
