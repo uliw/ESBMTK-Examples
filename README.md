@@ -28,3 +28,10 @@ This directory contains the ESBMTK implementation of the Boudreau et al. 2010 mo
 -   `boudreau2010.py` is the model definition
 -   `steady_state_plots.py` runs the model as a steady state problem
 -   `is92a_comparison_plots.py` runs the model with the is92a scenario.
+
+
+## Hypsography
+
+This directory contains a script to calculate the hypsometric data used by ESBMTK. The data is being retrieved [PyGMT](https://www.pygmt.org/), which needs to be installed manually via conda or pip.
+
+-   `hypsometry.py`
