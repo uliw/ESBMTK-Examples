@@ -38,24 +38,23 @@ def grid_area(lat: float, size: float) -> float:
     dx = size / 180 * pi * r * cos(radians(lat))
     return abs(dx * dy)
 
-def slice_count(start: int, end: int, weight: np.ndarray, grid: np.ndarray, elevation_minimum: int, elevation_maximum: int, dz: int) -> np.ndarray:
+def slice_count(start: int, end: int, weight: np.ndarray, grid: np.ndarray, elevation_minimum: int, elevation_maximum: int, elevations: np.ndarray, dz: int) -> np.ndarray:
     """Generate elevation count array for each latitudinal slice"""
     sub_grid = grid[start:end, ...]
 
     count = np.zeros((elevation_maximum - elevation_minimum) // dz, dtype=float)
-    elevation = np.arange(elevation_minimum, elevation_maximum, dz, dtype=int)
 
-    for i, e in enumerate(elevation):
+    for i, e in enumerate(elevations):
         a = np.sum(np.logical_and(sub_grid > e, sub_grid < e + dz), axis=1)
         count[i] = np.sum(a * weight)
 
     return count
 
-def process_slice(start: int, end: int, lat: np.ndarray, grid: np.ndarray, dz: int, elevation_minimum: int, elevation_maximum: int, dx: float) -> np.ndarray:
+def process_slice(start: int, end: int, lat: np.ndarray, grid: np.ndarray, dz: int, elevation_minimum: int, elevation_maximum: int, elevations: np.ndarray, dx: float) -> np.ndarray:
     """Process a slice of the grid"""
     lat_slice = lat[start:end]
     weight = np.array([grid_area(lat_val, dx) for lat_val in lat_slice])
-    return slice_count(start, end, weight, grid, elevation_minimum, elevation_maximum, dz)
+    return slice_count(start, end, weight, grid, elevation_minimum, elevation_maximum, elevations, dz)
 
 if __name__ == "__main__":
     num_jobs = 8  # Number of CPU cores available
@@ -83,7 +82,7 @@ if __name__ == "__main__":
     start = time.time()
 
     results = Parallel(n_jobs=num_jobs)(
-        delayed(process_slice)(slice_ranges[i], slice_ranges[i + 1], lat, whole_grid, dz, elevation_minimum, elevation_maximum, dx) for i in range(total_slices)
+        delayed(process_slice)(slice_ranges[i], slice_ranges[i + 1], lat, whole_grid, dz, elevation_minimum, elevation_maximum, elevations, dx) for i in range(total_slices)
     )
     
     print(f"duration = {time.time() - start:.2f} seconds")
