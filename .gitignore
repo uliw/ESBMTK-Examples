@@ -55,3 +55,4 @@ MANIFEST
 .venv*/
 .conda*/
 .python-version
+/Hypsography/#hypsometry.py#
