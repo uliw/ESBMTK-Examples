@@ -57,7 +57,7 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     """ Boudreau et al defined their reservoirs by area and and volume, and
     explicitly assign temperature, pressure and salinity.
     """
-    box_parameter: dict = {  # name: [[geometry], T, P]
+    box_parameters: dict = {  # name: [[geometry], T, P]
         "H_b": {  # High-Lat Box
             "g": {"area": "0.5e14m**2", "volume": "1.76e16 m**3"},  # geometry
             "T": 2,  # temperature in C
@@ -100,7 +100,7 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     }
 
     # initialize reservoirs
-    create_reservoirs(box_parameter, initial_conditions, M)
+    create_reservoirs(box_parameters, initial_conditions, M)
 
     # ------------------------------ Transport Processes ----------------- #
     # get a list of all species
