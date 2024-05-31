@@ -50,9 +50,11 @@ M.C_CP = Species2Species(
     signal=M.CP,  # list of processes
 )
 
-M.read_state(directory="init_data_3")  # read pre-industrial steady state
+M.read_state(directory="steady_state")  # read pre-industrial steady state
 M.run()
 M.save_data()
+
+# ------------------ Create the figures ----------------------- #
 
 # get CaCO3_export in mol/year and post process the data
 CaCO3_export = M.CaCO3_export.to(f"{M.f_unit}").magnitude

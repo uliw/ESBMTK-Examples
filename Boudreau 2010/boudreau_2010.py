@@ -27,6 +27,7 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
         GasReservoir,
         create_bulk_connections,
         create_reservoirs,
+        initialize_reservoirs,
         build_ct_dict,
         add_carbonate_system_1,
         add_carbonate_system_2,
@@ -59,18 +60,21 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     """
     box_parameters: dict = {  # name: [[geometry], T, P]
         "H_b": {  # High-Lat Box
+            "c": {M.DIC: "2153 umol/kg", M.TA: "2345 umol/kg"},
             "g": {"area": "0.5e14m**2", "volume": "1.76e16 m**3"},  # geometry
             "T": 2,  # temperature in C
             "P": 17.6,  # pressure in bar
             "S": 35,  # salinity in psu
         },
         "L_b": {  # Low-Lat Box
+            "c": {M.DIC: "1952 umol/kg", M.TA: "2288 umol/kg"},
             "g": {"area": "2.85e14m**2", "volume": "2.85e16 m**3"},
             "T": 21.5,
             "P": 5,
             "S": 35,
         },
         "D_b": {  # Deep Box
+            "c": {M.DIC: "2291 umol/kg", M.TA: "2399 umol/kg"},
             "g": {"area": "3.36e14m**2", "volume": "1.29e18 m**3"},
             "T": 2,
             "P": 240,
@@ -80,32 +84,8 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
         "Fb": {"ty": "Sink", "sp": [M.DIC, M.TA]},
     }
 
-    """ Boudreau at al 2010, provide volume and initial concentrations
-    for of DIC and TA for each box. Here we use a shortcut and calculate
-    the average concentration of DIC and TA and start the model
-    from a state where DIC and TA concentrations are uniform.
-    If you need box specific initial conditions use the output of
-    build_concentration_dicts as starting point, but it is usually
-    faster to just run the model to steady state and use this as a
-    starting condition.
-    """
-    V_t = 1.76e16 + 2.85e16 + 1.29e18
-    DIC_0 = (2.153 * 1.76e16 + 1.952 * 2.85e16 + 2.291 * 1.29e18) / V_t
-    TA_0 = (2.345 * 1.76e16 + 2.288 * 2.85e16 + 2.399 * 1.29e18) / V_t
-
-    initial_conditions: dict = {
-        # species: concentration, Isotopes, delta value
-        M.DIC: [Q_(f"{DIC_0} mmol/kg"), False, 0],
-        M.TA: [Q_(f"{TA_0} mmol/kg"), False, 0],
-    }
-
-    # initialize reservoirs
-    create_reservoirs(box_parameters, initial_conditions, M)
-
-    # ------------------------------ Transport Processes ----------------- #
-    # get a list of all species
-    species_list: list = list(initial_conditions.keys())
-
+    species_list = initialize_reservoirs(M, box_parameters)
+   
     """define the mixing between high latitude box and deep water
     through a dictionary that specifies the respective source and sink
     reservoirs, connection id,  the connection type, the scaling factor
