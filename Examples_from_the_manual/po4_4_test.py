@@ -19,7 +19,6 @@ tau = Q_("100 year")  # PO4 residence time in surface boxq
 F_b = 0.01  # About 1% of the exported P is buried in the deep ocean
 thc = "20*Sv"  # Thermohaline circulation in Sverdrup
 Redfield = 106 # C:P
-
 SourceProperties(
     name="weathering",
     species=[M.PO4, M.DIC],
@@ -93,11 +92,4 @@ ConnectionProperties(  # P burial
     id="burial",
     epsilon={M.DIC: 0},
 )
-
 M.run()
-pl = data_summaries(
-    M,  # model instance 
-    [M.DIC, M.PO4],  # SpeciesProperties list 
-    [M.S_b, M.D_b],  # Reservoir list
-)
-M.plot(pl, fn="po4_4.png")

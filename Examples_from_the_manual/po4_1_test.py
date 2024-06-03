@@ -80,28 +80,4 @@ ConnectionProperties(  #
     id="burial",
     species=[M.PO4],
 )
-
-from esbmtk import Signal
-
-Signal(
-    name="CR",  # Signal name
-    species=M.PO4,  # SpeciesProperties
-    start="1 Myrs",
-    shape="pyramid",
-    duration="1 Myrs",
-    mass="45 Pmol",
-)
-
-ConnectionProperties(
-    source=M.weathering,  # source of flux
-    sink=M.S_b,  # target of flux
-    rate=F_w,  # rate of flux
-    id="river",  # connection id
-    signal=M.CR,
-    species=[M.PO4],
-    ctype="regular",
-)
 M.run()
-
-M.plot([M.S_b.PO4, M.D_b.PO4, M.CR], fn="po4_2.png")
-#  M.save_data()

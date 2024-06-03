@@ -35,7 +35,6 @@ SinkProperties(
     name="burial",
     species=[M.PO4],
 )
-
 # reservoir definitions
 Reservoir(
     name="S_b",  # box name
@@ -91,5 +90,7 @@ ConnectionProperties(  #
 )
 
 M.run()
+
 M.plot([M.S_b.PO4, M.D_b.PO4], fn="po4_1.png")
-M.save_data()
+# optionally, save data
+# M.save_data(directory="./po4_1_data")
