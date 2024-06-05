@@ -79,14 +79,14 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
             "T": 2,
             "P": 240,
             "S": 35,
-        },  # sources an sinks
+        },  # sources and sinks
         "Fw": {"ty": "Source", "sp": [M.DIC, M.TA]},
         "Fb": {"ty": "Sink", "sp": [M.DIC, M.TA]},
     }
 
     species_list = initialize_reservoirs(M, box_parameters)
    
-    """define the mixing between high latitude box and deep water
+    """ Define the mixing between high latitude box and deep water
     through a dictionary that specifies the respective source and sink
     reservoirs, connection id,  the connection type, the scaling factor
     and the list of species that will be affected.
@@ -103,7 +103,8 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
             "sp": species_list,
         },
     }
-    create_bulk_connections(connection_dict, M, mt="1:1")
+    create_bulk_connections(connection_dict, M)
+    
 
     """ Specify the upwelling connnections. In order to save some typing
     we use a helper function to create the connection_dictionary by
@@ -125,25 +126,25 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
             "sp": species_list,  # affected species
         },
     )
-    create_bulk_connections(connection_dict, M, mt="1:1")
+    create_bulk_connections(connection_dict, M)
 
-    """ Organic matter flux P - 200 Tm/yr
-    POM = Particulate Organic matter. Since this model uses a fixed rate we
-    can declare this flux with the rate keyword. Boudreau 2010 only considers
-    the effect on DIC, and ignoresthe effect of POM on TA.
+    """ Organic matter flux P - 200 Tm/yr POM = Particulate Organic
+    matter. Since this model uses a fixed rate we can declare this flux with the
+    rate keyword. Boudreau 2010 only considers the effect on DIC, and ignoresthe
+    effect of POM on TA.
 
-    Note the "bp" keyword: This specifies that the connection will remove the respective
-    species form the source reservoir, but will bypass the addition to the sink
-    reservoir. It is used here for the CaCO3 export, since carbonate remineralization
-    his handled by the carbonate_system_2(). CS2 will calculate the amount of CaCO3
-    that is dissolved and add this to the deep-box. The amount that buried is thus implicit.
-    This is equivalent to export all CaCO3 into the deeb-box (i.e. bp="None"),
-    and then creating an explicit connection that describes burial into the sediment.
-    Since these a fixed rates, they could also be combined into one flux for DIC and
-    one flux for TA.
+    Note the "bp" keyword: This specifies that the connection will remove the
+    respective species form the source reservoir, but will bypass the addition
+    to the sink reservoir. It is used here for the CaCO3 export (Particulate
+    Inorganic Carbon, PIC) since carbonate remineralization his handled by the
+    carbonate_system_2(). CS2 will calculate the amount of CaCO3 that is
+    dissolved and add this to the deep-box. The amount that buried is thus
+    implicit.  This is equivalent to export all CaCO3 into the deeb-box
+    (i.e. bp="None"), and then creating an explicit connection that describes
+    burial into the sediment.  Since these a fixed rates, they could also be
+    combined into one flux for DIC and one flux for TA.
     """
-    M.OM_export = Q_("200 Tmol/a")
-    M.CaCO3_export = Q_("60 Tmol/a")
+    M.OM_export =  Q_("200 Tmol/a") M.CaCO3_export = Q_("60 Tmol/a")
 
     # Fluxes going into deep box
     connection_dict = {
