@@ -30,7 +30,7 @@ rain_ratio = 0.3
 alpha = 0.6
 
 # import the base model
-M = bd.initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step)
+M = bd.initialize_model(rain_ratio, alpha, run_time, time_step)
 
 # Create a Signal Instance for the carbon pulse
 M.CP = Signal(

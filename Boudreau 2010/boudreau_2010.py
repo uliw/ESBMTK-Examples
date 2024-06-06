@@ -20,7 +20,10 @@ Copyright (C), 2024 Ulrich G. Wortmann & Tina Tsan
 """
 
 
-def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
+def initialize_model(rain_ratio, alpha, run_time, time_step):
+    """Package the model definition inside a function so that we can
+    import the model into other python code
+    """
     from esbmtk import (
         Model,
         Q_,
@@ -85,7 +88,7 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     }
 
     species_list = initialize_reservoirs(M, box_parameters)
-   
+
     """ Define the mixing between high latitude box and deep water
     through a dictionary that specifies the respective source and sink
     reservoirs, connection id,  the connection type, the scaling factor
@@ -94,17 +97,16 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     connection_dict = {
         "H_b_to_D_b@mix_down": {  # source_to_sink@id
             "ty": "scale_with_concentration",  # type
-            "sc": Q_("30 Sverdrup"),
+            "sc": "30 Sverdrup",
             "sp": species_list,
         },
         "D_b_to_H_b@mix_up": {
             "ty": "scale_with_concentration",
-            "sc": Q_("30 Sverdrup"),
+            "sc": "30 Sverdrup",
             "sp": species_list,
         },
     }
     create_bulk_connections(connection_dict, M)
-    
 
     """ Specify the upwelling connnections. In order to save some typing
     we use a helper function to create the connection_dictionary by
@@ -113,11 +115,11 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     data into a connection_dictionary.
     """
     conveyor_belt_transport = {  # advection
-        "L_b_to_H_b@thc": Q_("25 Sverdrup"),
+        "L_b_to_H_b@thc": "25 Sverdrup",
         # Downwelling
-        "H_b_to_D_b@thc": Q_("25 Sverdrup"),
+        "H_b_to_D_b@thc": "25 Sverdrup",
         # Upwelling
-        "D_b_to_L_b@thc": Q_("25 Sverdrup"),
+        "D_b_to_L_b@thc": "25 Sverdrup",
     }
     connection_dict: dict = build_ct_dict(
         conveyor_belt_transport,  # dict with scaling factors
@@ -129,9 +131,9 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     create_bulk_connections(connection_dict, M)
 
     """ Organic matter flux P - 200 Tm/yr POM = Particulate Organic
-    matter. Since this model uses a fixed rate we can declare this flux with the
-    rate keyword. Boudreau 2010 only considers the effect on DIC, and ignoresthe
-    effect of POM on TA.
+    matter. Since this model uses a fixed rate we can declare this flux with
+    the rate keyword. Boudreau 2010 only considers the effect on DIC, and
+    ignores the effect of POM on TA.
 
     Note the "bp" keyword: This specifies that the connection will remove the
     respective species form the source reservoir, but will bypass the addition
@@ -144,7 +146,9 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     burial into the sediment.  Since these a fixed rates, they could also be
     combined into one flux for DIC and one flux for TA.
     """
-    M.OM_export =  Q_("200 Tmol/a") M.CaCO3_export = Q_("60 Tmol/a")
+
+    M.OM_export = Q_("200 Tmol/yr")  # convert into Quantity so we can multiply
+    M.CaCO3_export = Q_("60 Tmol/yr")  # with 2 for the alkalinity term
 
     # Fluxes going into deep box
     connection_dict = {
@@ -168,8 +172,9 @@ def initialize_esbmtk_model(rain_ratio, alpha, run_time, time_step):
     }
     create_bulk_connections(connection_dict, M, mt="1:1")
 
-    # -------------------- Carbonate System- virtual reservoir definitions -- #
-    """ To setup carbonate chemistry, one needs to know the soource adn sink of the
+    """ #--------------- Carbonate System- virtual  definitions -------#
+    
+    To setup carbonate chemistry, one needs to know the soource adn sink of the
     export production fluxes. We thus keep two lists one for the surface boxes
     and one for the deep boxes.
     
