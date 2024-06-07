@@ -40,7 +40,7 @@ res = 5  # Grid resolution in minutes
 r = "05m"
 dz = 100  # Height interval in meters
 
-elevation_minimum = -11000  # Relative to sea level
+elevation_minimum = -11000 -dz  # Relative to sea level
 elevation_maximum = 9000
 elevations = np.arange(elevation_minimum, elevation_maximum, dz, dtype=int)
 dx = res / 60  # Convert resolution to degrees
@@ -83,7 +83,7 @@ for result in results:
 total_count = total_count / np.sum(total_count)
 cum = np.cumsum(total_count)
 
-df = pd.DataFrame({"Elevation": elevations, "CumSum": cum})
+df = pd.DataFrame({"Elevation": elevations+dz, "CumSum": cum})
 df.sort_values(by=["Elevation"], inplace=True)
 
 df.to_csv(f"Hypsometric_Curve_{r}_{dz}.csv", index=False, float_format="%.16f")
