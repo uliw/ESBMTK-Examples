@@ -180,10 +180,10 @@ DataField(
     name="df_burial",
     x1_data=[M.time, M.time, M.ef_Fburial.x, M.ef_Fburial.x],
     y1_data=[
-        -M.D_b.Fburial.c,
-        M.D_b.Fdiss.c,
-        -M.ef_Fburial.y,
-        CaCO3_export - M.ef_Fburial.y,
+        M.D_b.Fburial.c, # burial from model
+        M.D_b.Fdiss.c, # dissolution from model
+        M.ef_Fburial.y, # burial as digitized
+        CaCO3_export - M.ef_Fburial.y, # dissolution from digitized burial
     ],
     y1_label="Fburial Fdiss Fburial_d Fdiss_d".split(" "),
     y1_color="C0 C1 C0 C1".split(" "),
