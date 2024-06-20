@@ -2,14 +2,14 @@ name: example-environment
 channels:
   - conda-forge
 dependencies:
-  - python
+  - python=3.11
   - numpy
-  - pip
-  - pip:
-    - nbgitpuller
-    - sphinx-gallery
-  - conda:
-    - pandas
-    - matplotlib
-    - esbmtk
-
+  - matplotlib
+  - pandas
+  - pint
+  - scipy
+  - numba
+  - PyCO2SYS
+  - psutil
+  - esbmtk
+  
