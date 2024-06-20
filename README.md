@@ -25,7 +25,7 @@ This directory contains the example code that is shown in the manual. For detail
 
 This directory contains the ESBMTK implementation of the Boudreau et al. 2010 model see <https://doi.org/10.1029/2009gb003654>
 
--   `model_walkthrough.ipynb` is Jupyter Notebook explaining the model setup. Ii is also available online via Binder.
+-   `model_walkthrough.ipynb` is Jupyter Notebook explaining the model setup. Ii is also available online as an interactive [Jupyter Notebook via Binder](https://mybinder.org/v2/gh/uliw/ESBMTK-Examples/main?labpath=%2FBoudreau_2010%2Fmodel_walkthrough.ipynb).
 -   `boudreau2010.py` is the model definition
 -   `steady_state_plots.py` runs the model as a steady state problem
 -   `is92a_comparison_plots.py` runs the model with the is92a scenario.
