@@ -41,8 +41,8 @@ from esbmtk import (
 )
 
 M = Model(
-    stop="100 ky",  # end time of model
-    max_timestep="1 ky",  # time step
+    stop="100 kyr",  # end time of model
+    max_timestep="1 kyr",  # time step
     element=[  # list of elements we consider in the model
         "Carbon",
         "Boron",

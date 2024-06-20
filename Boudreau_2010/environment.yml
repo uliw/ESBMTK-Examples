@@ -1,6 +1,15 @@
-name: esbmtk
+name: example-environment
 channels:
   - conda-forge
 dependencies:
-  - python=3.11
-  - esbmtk
+  - python
+  - numpy
+  - pip
+  - pip:
+    - nbgitpuller
+    - sphinx-gallery
+  - conda:
+    - pandas
+    - matplotlib
+    - esbmtk
+
