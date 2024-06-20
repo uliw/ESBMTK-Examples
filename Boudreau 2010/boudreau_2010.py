@@ -45,12 +45,9 @@ def initialize_model(rain_ratio, alpha, run_time, time_step):
             "Carbon",
             "Boron",
             "Hydrogen",
-            "Phosphor",
-            "Oxygen",
-            "misc_variables",
+            "misc_variables",  # needed for plotting depth data
         ],
         mass_unit="mol",
-        volume_unit="l",
         concentration_unit="mol/kg",
         opt_k_carbonic=13,  # Use Millero 2006
         opt_pH_scale=3,  # 1:total, 3:free scale
@@ -89,45 +86,40 @@ def initialize_model(rain_ratio, alpha, run_time, time_step):
 
     species_list = initialize_reservoirs(M, box_parameters)
 
-    """ Define the mixing between high latitude box and deep water
+    """ Define the mixing between high latitude box and deep water and
+    the thermohaline circulation (F3, F4,)
     through a dictionary that specifies the respective source and sink
     reservoirs, connection id,  the connection type, the scaling factor
-    and the list of species that will be affected.
+    and the list of species that will be affected. 
     """
     connection_dict = {
-        "H_b_to_D_b@mix_down": {  # source_to_sink@id
+        # source_to_sink@id 
+        "H_b_to_D_b@mix_down": {  # High Lat mix down F4
             "ty": "scale_with_concentration",  # type
-            "sc": "30 Sverdrup",
-            "sp": species_list,
+            "sc": "30 Sverdrup",  # scale
+            "sp": species_list,  # list of affected species
         },
-        "D_b_to_H_b@mix_up": {
+        "D_b_to_H_b@mix_up": {  # High Lat mix up F4
             "ty": "scale_with_concentration",
             "sc": "30 Sverdrup",
             "sp": species_list,
         },
-    }
-    create_bulk_connections(connection_dict, M)
-
-    """ Specify the upwelling connnections. In order to save some typing
-    we use a helper function to create the connection_dictionary by
-    first creating a dictionary that contains the respective scaling
-    factors, and then use the build_ct_dict() function to merge this
-    data into a connection_dictionary.
-    """
-    conveyor_belt_transport = {  # advection
-        "L_b_to_H_b@thc": "25 Sverdrup",
-        # Downwelling
-        "H_b_to_D_b@thc": "25 Sverdrup",
-        # Upwelling
-        "D_b_to_L_b@thc": "25 Sverdrup",
-    }
-    connection_dict: dict = build_ct_dict(
-        conveyor_belt_transport,  # dict with scaling factors
-        {
-            "ty": "scale_with_concentration",  # connection type
-            "sp": species_list,  # affected species
+        "L_b_to_H_b@thc": {  # thc L to H F3
+            "ty": "scale_with_concentration",
+            "sc": "25 Sverdrup",
+            "sp": species_list,
         },
-    )
+        "H_b_to_D_b@thc": {  # thc H to D F3
+            "ty": "scale_with_concentration",
+            "sc": "25 Sverdrup",
+            "sp": species_list,
+        },
+        "D_b_to_L_b@thc": {  # thc D to L F3
+            "ty": "scale_with_concentration",
+            "sc": "25 Sverdrup",
+            "sp": species_list,
+        },
+    }
     create_bulk_connections(connection_dict, M)
 
     """ Organic matter flux P - 200 Tm/yr POM = Particulate Organic
@@ -152,27 +144,27 @@ def initialize_model(rain_ratio, alpha, run_time, time_step):
 
     # Fluxes going into deep box
     connection_dict = {
-        "L_b_to_D_b@POM": {  # DIC from organic matter
+        "L_b_to_D_b@POM": {  # DIC from organic matter F5
             "sp": M.DIC,
-            "ty": "Regular",
+            "ty": "Fixed",
             "ra": M.OM_export,
         },
-        "L_b_to_D_b@PIC_DIC": {  # DIC from CaCO3
+        "L_b_to_D_b@PIC_DIC": {  # DIC from CaCO3 F6
             "sp": M.DIC,
-            "ty": "Regular",
+            "ty": "Fixed",
             "ra": M.CaCO3_export,
             "bp": "sink",
         },
-        "L_b_to_D_b@PIC_TA": {  # TA from CaCO3
+        "L_b_to_D_b@PIC_TA": {  # TA from CaCO3 F6
             "sp": M.TA,
-            "ty": "Regular",
+            "ty": "Fixed",
             "ra": M.CaCO3_export * 2,
             "bp": "sink",
         },
     }
-    create_bulk_connections(connection_dict, M, mt="1:1")
+    create_bulk_connections(connection_dict, M)
 
-    """ #--------------- Carbonate System- virtual  definitions -------#
+    """ #--------------- Carbonate chemisrty  -------#
     
     To setup carbonate chemistry, one needs to know the soource adn sink of the
     export production fluxes. We thus keep two lists one for the surface boxes
@@ -181,19 +173,18 @@ def initialize_model(rain_ratio, alpha, run_time, time_step):
     Carbonate system ` calculates tracer like CO2aq,  CO3, and H+, for the
     surface boxes.
 
-    Carbonate System ` calculates the above tracers, and additionally
+    Carbonate System calculates the above tracers, and additionally
     the critical depth intervals (Saturation, CCD, and snowline), as well
     as the amount of carbonate that it dissolved.
     """
     surface_boxes: list = [M.L_b, M.H_b]
     deep_boxes: list = [M.D_b]
     ef = M.flux_summary(filter_by="PIC_DIC", return_list=True)
-
     add_carbonate_system_1(surface_boxes)
 
-    add_carbonate_system_2(
-        r_db=deep_boxes,  # list of reservoir groups
+    add_carbonate_system_2( # F6/F2
         r_sb=surface_boxes,  # list of reservoir groups
+        r_db=deep_boxes,  # list of reservoir groups
         carbonate_export_fluxes=ef,  # list of export fluxes
         z0=-200,  # depth of shelf
         alpha=alpha,  # dissolution coefficient
@@ -203,7 +194,6 @@ def initialize_model(rain_ratio, alpha, run_time, time_step):
         name="CO2_At",
         species=M.CO2,
         species_ppm="280 ppm",
-        register=M,
     )
 
     """ GasExchange connections currently do not support the setup
@@ -213,42 +203,33 @@ def initialize_model(rain_ratio, alpha, run_time, time_step):
     explicitly.
     """
     pv = "4.8 m/d"  # piston velocity
-    Species2Species(
+
+    Species2Species(  # High Latitude surface to atmosphere F8
         source=M.CO2_At,  # Reservoir Species
         sink=M.H_b.DIC,  # Reservoir Species
         species=M.CO2,
-        ref_species=M.H_b.CO2aq,
-        solubility=M.H_b.swc.SA_co2,  # float
-        area=M.H_b.area,
-        id="H_b",
         piston_velocity=pv,
-        water_vapor_pressure=M.H_b.swc.p_H2O,
-        register=M,
         ctype="gasexchange",
+        id="H_b",
     )
 
-    Species2Species(
+    Species2Species(  # Low Latitude surface to atmosphere F7
         source=M.CO2_At,  # Reservoir Species
         sink=M.L_b.DIC,  # Reservoir Species
         species=M.CO2,
-        ref_species=M.L_b.CO2aq,
-        solubility=M.L_b.swc.SA_co2,  # float
-        area=M.L_b.area,
-        id="L_b",
         piston_velocity=pv,
-        water_vapor_pressure=M.L_b.swc.p_H2O,
-        register=M,
         ctype="gasexchange",
+        id="L_b",
     )
 
-    # create the weathering fluxes
+    # create the weathering fluxes F1
     ConnectionProperties(
         source=M.Fw,
         sink=M.L_b,
         rate={M.DIC: "12 Tmol/a", M.TA: "24 Tmol/a"},
-        id="weathering",
         species=[M.DIC, M.TA],
-        ctype="regular",
+        ctype="fixed",
+        id="weathering",
     )
 
     return M
