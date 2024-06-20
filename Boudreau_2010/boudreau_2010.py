@@ -51,7 +51,6 @@ def initialize_model(rain_ratio, alpha, run_time, time_step):
         concentration_unit="mol/kg",
         opt_k_carbonic=13,  # Use Millero 2006
         opt_pH_scale=3,  # 1:total, 3:free scale
-        opt_buffers_mode=2,  # carbonate, borate water alkalinity only
     )
 
     # -------------------- Set up box parameters ------------------------ #

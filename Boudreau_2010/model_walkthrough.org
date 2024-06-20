@@ -53,7 +53,6 @@ M = Model(
     concentration_unit="mol/kg",  # mol/l or mol/kg
     opt_k_carbonic=13,  # Use Millero 2006
     opt_pH_scale=3,  # 1:total, 3:free scale
-    opt_buffers_mode=2,  # carbonate, borate water alkalinity only
 )
 #+END_SRC
 Note that ESBMTK will parse units and translate them into the correct model units. We also import the quantity constructor =Q_= so that we can take advantage of unit parsing (see below).
@@ -264,7 +263,6 @@ def initialize_model(rain_ratio, alpha, run_time, time_step):
         concentration_unit="mol/kg",
         opt_k_carbonic=13,  # Use Millero 2006
         opt_pH_scale=3,  # 1:total, 3:free scale
-        opt_buffers_mode=2,  # carbonate, borate water alkalinity only
     )
 
     # rest of the model code
