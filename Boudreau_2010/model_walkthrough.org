@@ -37,6 +37,7 @@ from esbmtk import (
     create_reservoirs,
     initialize_reservoirs,
     build_ct_dict,
+    data_summaries,
     Q_,  # the quantity operator
 )
 
@@ -175,7 +176,7 @@ add_carbonate_system_2(  # F6/F2
     r_db=deep_boxes,  # list of reservoir groups
     carbonate_export_fluxes=ef,  # list of export fluxes
     z0=-200,  # depth of shelf
-    alpha=alpha,  # dissolution coefficient
+    alpha=0.6,  # dissolution coefficient
 )
 #+END_SRC
 
@@ -185,6 +186,12 @@ add_carbonate_system_2(  # F6/F2
 Gas exchange calculations require that we have a box that represents the atmosphere. Presently, each atmospheric species requires its own box. Further, the =ConnectionProperties= class does currently not handle gas-exchange connections. Rather, we have to use the =Species2Species= class to explicitly connect a surface ocean box with the atmosphere. Future ESBMTK versions will streamline this process though.
 #+BEGIN_SRC ipython
 pv = "4.8 m/d"  # piston velocity
+
+GasReservoir(
+    name="CO2_At",
+    species=M.CO2,
+    species_ppm="280 ppm",
+)
 
 Species2Species(  # High Latitude surface to atmosphere F8
     source=M.CO2_At,  # Reservoir Species
@@ -221,10 +228,13 @@ ConnectionProperties(
 #+END_SRC
 
 ** Executing the model and displaying results
-Running the model and displaying results is also straightforward 
+Rather than plotting each species in each reservoir, we use the =data_summaries()= function which will create a plot for each species in =species_list= showing the data for each box in the =box_names= list . 
 #+BEGIN_SRC ipython
 M.run()
-M.plot([M.CO2_At, M.L_b, B.D_b])
+box_names = [M.L_b, M.H_b, M.D_b]
+pl = data_summaries(M, species_list, box_names, M.L_b.DIC)
+pl += [M.CO2_At] # add the pCO2 data
+M.plot(pl)
 #+END_SRC
 
 
@@ -269,7 +279,7 @@ def initialize_model(rain_ratio, alpha, run_time, time_step):
 
     return M  # return the model object
 #+END_SRC
-once this is saved to e.g., =boudreau_2010.py=, we can import the model definition like this into a task-specific python script. We use this approach to create i.e., the steady-state conditions or to drive the model with a carbon pulse.
+once this is saved to e.g., =boudreau_2010.py=, we can import the model definition like this into a task-specific python script. We use this approach to create i.e., the steady-state conditions or to drive the model with a carbon pulse (see =is92a_comparison_plots.py=)
 #+BEGIN_SRC ipython
 import boudreau_2010 as bd
 
@@ -281,6 +291,6 @@ alpha = 0.6
 # import the model definition
 M = bd.initialize_model(rain_ratio, alpha, run_time, time_step)
 M.run()
-M.plot([M.CO2_At, M.L_b, B.D_b])
+M.plot([M.CO2_At, M.L_b.DIC, M.D_b.DIC])
 #+END_SRC
 
