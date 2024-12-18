@@ -2,6 +2,8 @@
 
 This repo holds example code for the [Earth Science Box Modeling Toolkit.](https://github.com/uliw/esbmtk) Please see the <https://esbmtk.readthedocs.io/en/latest/> for ESBMTK installation and usage instruction.
 
+To run these examples, you will need at least ESBMTK 0.14.x
+
 Download the examples via:
 
 ```sh
@@ -14,11 +16,6 @@ or as zipfile via <https://github.com/uliw/ESBMTK-Examples/archive/refs/heads/ma
 ## Examples from the Manual
 
 This directory contains the example code that is shown in the manual. For details and explanations see <https://esbmtk.readthedocs.io/en/latest/>
-
--   `po4_1.py` A simple 2-box P-cycle example
--   `po4_2.py` A simple 2-box P-cycle example, demonstrating how to force a model with the signal class
--   `po4_3.py` A simple 2-box P-cycle example demonstrating the use of mutiple species
--   `po4_4.py` A simple 2-box P-cycle example demonstrating how to add isotope calculations
 
 
 ## Boudreau 2010 et al.
