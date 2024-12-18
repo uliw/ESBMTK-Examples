@@ -79,7 +79,7 @@ for n in data.split(" "):
 DataField(
     name="df_pulse",
     x1_data=[M.time, M.ef_Cpulse.x],
-    y1_data=[M.CP.nf.m, M.ef_Cpulse.y],
+    y1_data=[M.CP.signal_data.m, M.ef_Cpulse.y],
     y1_label=["This model", "Fig2A"],
     y1_color="C0 C1 ".split(" "),
     y1_style="solid dotted".split(" "),
@@ -207,7 +207,7 @@ DataField(
 
 DataField(
     name="df_Carbon_pulse",
-    y1_data=M.CP.data.m,
+    y1_data=M.CP.signal_data.m,
     y1_label="CO2 input",
     y1_legend="C mol/yr",
     register=M,

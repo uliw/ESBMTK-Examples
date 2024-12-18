@@ -85,8 +85,7 @@ def initialize_model(rain_ratio, alpha, run_time, time_step):
 
     species_list = initialize_reservoirs(M, box_parameters)
 
-    """ Define the mixing between high latitude box and deep water and
-    the thermohaline circulation (F3, F4,)
+    """ Define the mixing and thermohaline fluxes 
     through a dictionary that specifies the respective source and sink
     reservoirs, connection id,  the connection type, the scaling factor
     and the list of species that will be affected. 

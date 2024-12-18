@@ -12,7 +12,6 @@ alpha = 0.6
 M = bd.initialize_model(rain_ratio, alpha, run_time, time_step)
 M.run()
 M.save_state(directory="steady_state")
-
 # --------- Create figures and print diagnostic data ---------------#
 """ Some of the tracer and critical depth interval data are not
 part of the ODE model. Rather, we have to calculate them in a
