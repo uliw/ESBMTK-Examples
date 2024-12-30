@@ -1,4 +1,4 @@
-""" Compare ESBMTK results with the data published
+"""Compare ESBMTK results with the data published
 by Boudreau et al. see https://doi.org/10.1029/2009gb003654
 
 Authors: Uli Wortmann & Tina Tsan
@@ -18,6 +18,7 @@ Copyright (C), 2024 Ulrich G. Wortmann & Tina Tsan
      You should have received a copy of the GNU General Public License
      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import numpy as np
 from esbmtk import Source, Signal, Species2Species, DataField, ExternalData
 from esbmtk import carbonate_system_2_pp
@@ -37,7 +38,7 @@ M.CP = Signal(
     name="CP",  # name of signal
     species=M.CO2,  # species
     filename="IS92a-scenario.csv",
-    scale=0.877, # required to match the total carbon release
+    scale=0.877,  # required to match the total carbon release
     register=M,
 )
 
@@ -172,7 +173,7 @@ DataField(
     y1_color="C0 C1 C2 C0 C1 C2".split(" "),
     y1_style="solid solid solid dotted dotted dotted".split(" "),
     y1_legend="Depth (m)",
-     title="e)",
+    title="e)",
     register=M,
 )
 
@@ -180,10 +181,10 @@ DataField(
     name="df_burial",
     x1_data=[M.time, M.time, M.ef_Fburial.x, M.ef_Fburial.x],
     y1_data=[
-        M.D_b.Fburial.c, # burial from model
-        M.D_b.Fdiss.c, # dissolution from model
-        M.ef_Fburial.y, # burial as digitized
-        CaCO3_export - M.ef_Fburial.y, # dissolution from digitized burial
+        M.D_b.Fburial.c,  # burial from model
+        M.D_b.Fdiss.c,  # dissolution from model
+        M.ef_Fburial.y,  # burial as digitized
+        CaCO3_export - M.ef_Fburial.y,  # dissolution from digitized burial
     ],
     y1_label="Fburial Fdiss Fburial_d Fdiss_d".split(" "),
     y1_color="C0 C1 C0 C1".split(" "),

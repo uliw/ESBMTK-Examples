@@ -46,14 +46,15 @@ plt, fig, axs = M.plot(
 data = [1952e-6, 2153e-6, 2291e-6, 2288e-6, 2345e-6, 2399e-6]
 
 # Add digitized data to model results
+# FIXME: This seems to have no effect
 v = 0
 u = 0
 for i in range(2):
     for j in range(3):
         d = data[u]
-        axs[0, i].scatter(10, d, color=f"C{j}")
+        axs[j, i].scatter(10, d, color=f"C{j}")
         u = u + 1
-    axs[v, i].autoscale(enable=None, axis="y")
+        axs[j, i].autoscale(enable=None, axis="y")
 
 # CO32- values after Boudreau et al. 2010, Tab 3
 axs[1, 1].scatter(1, 234e-6, color="C0")
@@ -77,7 +78,7 @@ fig.savefig("steady_state.pdf")
 m = [M.L_b.DIC, M.L_b.TA, M.H_b.DIC, M.H_b.TA, M.D_b.DIC, M.D_b.TA]
 for i, n in enumerate(data):
     d = data[i]
-    print(f"Delta {m[i].full_name} = {(m[i].c[0] - d)*1e6:.2f} [umol/kg]")
+    print(f"Delta {m[i].full_name} = {(m[i].c[0] - d) * 1e6:.2f} [umol/kg]")
 
 # Print a table with the equilibrium constants for each box
 ks = "K0, K1, K2, KW, KB"

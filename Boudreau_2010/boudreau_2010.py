@@ -1,4 +1,4 @@
-""" The ESBMTK implmentation of the Boudreau et al. 2010
+"""The ESBMTK implmentation of the Boudreau et al. 2010
 model see https://doi.org/10.1029/2009gb003654
 
 Authors: Uli Wortmann & Tina Tsan
@@ -91,7 +91,7 @@ def initialize_model(rain_ratio, alpha, run_time, time_step):
     and the list of species that will be affected. 
     """
     connection_dict = {
-        # source_to_sink@id 
+        # source_to_sink@id
         "H_b_to_D_b@mix_down": {  # High Lat mix down F4
             "ty": "scale_with_concentration",  # type
             "sc": "30 Sverdrup",  # scale
@@ -180,7 +180,7 @@ def initialize_model(rain_ratio, alpha, run_time, time_step):
     ef = M.flux_summary(filter_by="PIC_DIC", return_list=True)
     add_carbonate_system_1(surface_boxes)
 
-    add_carbonate_system_2( # F6/F2
+    add_carbonate_system_2(  # F6/F2
         r_sb=surface_boxes,  # list of reservoir groups
         r_db=deep_boxes,  # list of reservoir groups
         carbonate_export_fluxes=ef,  # list of export fluxes
