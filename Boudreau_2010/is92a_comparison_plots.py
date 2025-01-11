@@ -1,5 +1,6 @@
-"""Compare ESBMTK results with the data published
-by Boudreau et al. see https://doi.org/10.1029/2009gb003654
+"""Compare ESBMTK results with published data.
+
+Sepcifically Boudreau et al. see https://doi.org/10.1029/2009gb003654
 
 Authors: Uli Wortmann & Tina Tsan
 
@@ -19,11 +20,17 @@ Copyright (C), 2024 Ulrich G. Wortmann & Tina Tsan
      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import numpy as np
-from esbmtk import Source, Signal, Species2Species, DataField, ExternalData
-from esbmtk import carbonate_system_2_pp
-from esbmtk import gas_exchange_fluxes
 import boudreau_2010 as bd
+import numpy as np
+from esbmtk import (
+    DataField,
+    ExternalData,
+    Signal,
+    Source,
+    Species2Species,
+    carbonate_system_2_pp,
+    gas_exchange_fluxes,
+)
 
 run_time = "3800 yr"
 time_step = "1 month"
@@ -82,8 +89,8 @@ DataField(
     x1_data=[M.time, M.ef_Cpulse.x],
     y1_data=[M.CP.signal_data.m, M.ef_Cpulse.y],
     y1_label=["This model", "Fig2A"],
-    y1_color="C0 C1 ".split(" "),
-    y1_style="solid dotted".split(" "),
+    y1_color=["C0", "C1", ""],
+    y1_style=["solid", "dotted"],
     y1_legend="C [mol/year]",
     title="g)",
     register=M,
@@ -94,8 +101,8 @@ DataField(
     x1_data=[M.time, M.time, M.ef_EL.x, M.ef_EH.x],
     y1_data=[GEX_L, GEX_H, M.ef_EL.y, M.ef_EH.y],
     y1_label=["Low-Lat gex", "High Lat gex", "d_LL", "d_HL"],
-    y1_color="C0 C1 C0 C1 ".split(" "),
-    y1_style="solid solid dotted dotted".split(" "),
+    y1_color=["C0", "C1", "C0", "C1", ""],
+    y1_style=["solid", "solid", "dotted", "dotted"],
     y1_legend="Gas Exchange Flux [mol/yr]",
     title="d)",
     register=M,
@@ -112,10 +119,10 @@ DataField(
         M.ef_dic_h.y * 1000,
         M.ef_dic_d.y * 1000,
     ],
-    y1_label="Low latitude, High latitude, Deep box, d_L, d_H, d_D".split(", "),
+    y1_label=["Low latitude", "High latitude", "Deep box", "d_L", "d_H", "d_D"],
     y1_legend="DIC [mmol/L]",
-    y1_color="C0 C1 C2 C0 C1 C2".split(" "),
-    y1_style="solid solid solid dotted dotted dotted".split(" "),
+    y1_color=["C0", "C1", "C2", "C0", "C1", "C2"],
+    y1_style=["solid", "solid", "solid", "dotted", "dotted", "dotted"],
     title="a)",
     register=M,
 )
@@ -131,9 +138,9 @@ DataField(
         M.ef_TA_h.y * 1000,
         M.ef_TA_d.y * 1000,
     ],
-    y1_label="Low latitude, High latitude, Deep box, d_L, d_H, d_D".split(", "),
-    y1_color="C0 C1 C2 C0 C1 C2".split(" "),
-    y1_style="solid solid solid dotted dotted dotted".split(" "),
+    y1_label=["Low latitude", "High latitude", "Deep box", "d_L", "d_H", "d_D"],
+    y1_color=["C0", "C1", "C2", "C0", "C1", "C2"],
+    y1_style=["solid", "solid", "solid", "dotted", "dotted", "dotted"],
     y1_legend="TA [mmol/L]",
     title="b)",
     register=M,
@@ -150,9 +157,9 @@ DataField(
         -np.log10(M.ef_hplus_h.y),
         -np.log10(M.ef_hplus_d.y),
     ],
-    y1_label="Low latitude, High latitude, Deep box, d_L, d_H, d_D".split(", "),
-    y1_color="C0 C1 C2 C0 C1 C2".split(" "),
-    y1_style="solid solid solid dotted dotted dotted".split(" "),
+    y1_label=["Low latitude", "High latitude", "Deep box", "d_L", "d_H", "d_D"],
+    y1_color=["C0", "C1", "C2", "C0", "C1", "C2"],
+    y1_style=["solid", "solid", "solid", "dotted", "dotted", "dotted"],
     y1_legend="pH",
     register=M,
     title="c)",
@@ -169,9 +176,9 @@ DataField(
         -M.ef_zcc.y,
         -M.ef_zsnow.y,
     ],
-    y1_label="zsat zcc zsnow d_zsat d_zcc d_zsnow".split(" "),
-    y1_color="C0 C1 C2 C0 C1 C2".split(" "),
-    y1_style="solid solid solid dotted dotted dotted".split(" "),
+    y1_label=["zsat", "zcc", "zsnow", "d_zsat", "d_zcc", "d_zsnow"],
+    y1_color=["C0", "C1", "C2", "C0", "C1", "C2"],
+    y1_style=["solid", "solid", "solid", "dotted", "dotted", "dotted"],
     y1_legend="Depth (m)",
     title="e)",
     register=M,
@@ -186,9 +193,9 @@ DataField(
         M.ef_Fburial.y,  # burial as digitized
         CaCO3_export - M.ef_Fburial.y,  # dissolution from digitized burial
     ],
-    y1_label="Fburial Fdiss Fburial_d Fdiss_d".split(" "),
-    y1_color="C0 C1 C0 C1".split(" "),
-    y1_style="solid solid dotted dotted".split(" "),
+    y1_label=["Fburial", "Fdiss", "Fburial_d", "Fdiss_d"],
+    y1_color=["C0", "C1", "C0", "C1"],
+    y1_style=["solid", "solid", "dotted", "dotted"],
     y1_legend="C [mol/yr]",
     title="h)",
     register=M,
@@ -198,9 +205,9 @@ DataField(
     name="df_atm",
     x1_data=[M.time, M.ef_pco2.x],
     y1_data=[M.CO2_At.c * 1e6, M.ef_pco2.y],
-    y1_color="C0 C1".split(" "),
-    y1_style="solid dotted".split(" "),
-    y1_label="pCO2, d_pCO2".split(", "),
+    y1_color=["C0", "C1"],
+    y1_style=["solid", "dotted"],
+    y1_label=["pCO2", "d_pCO2"],
     y1_legend="ppm",
     title="f)",
     register=M,

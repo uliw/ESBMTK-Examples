@@ -1,7 +1,5 @@
-from math import log10
-from esbmtk import data_summaries, ExternalData
-from esbmtk import carbonate_system_2_pp
 import boudreau_2010 as bd
+from esbmtk import carbonate_system_2_pp, data_summaries
 
 run_time = "1000 kyr"
 time_step = "100 yr"  # this is max timestep
@@ -76,7 +74,7 @@ fig.savefig("steady_state.pdf")
 
 # Printout the final concentrations
 m = [M.L_b.DIC, M.L_b.TA, M.H_b.DIC, M.H_b.TA, M.D_b.DIC, M.D_b.TA]
-for i, n in enumerate(data):
+for i, _n in enumerate(data):
     d = data[i]
     print(f"Delta {m[i].full_name} = {(m[i].c[0] - d) * 1e6:.2f} [umol/kg]")
 

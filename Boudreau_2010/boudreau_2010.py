@@ -1,5 +1,6 @@
-"""The ESBMTK implmentation of the Boudreau et al. 2010
-model see https://doi.org/10.1029/2009gb003654
+"""The ESBMTK implmentation of Boudreau et al. 2010.
+
+See https://doi.org/10.1029/2009gb003654
 
 Authors: Uli Wortmann & Tina Tsan
 
@@ -21,21 +22,17 @@ Copyright (C), 2024 Ulrich G. Wortmann & Tina Tsan
 
 
 def initialize_model(rain_ratio, alpha, run_time, time_step):
-    """Package the model definition inside a function so that we can
-    import the model into other python code
-    """
+    """Package the model definition inside a function."""
     from esbmtk import (
-        Model,
         Q_,
+        ConnectionProperties,
         GasReservoir,
-        create_bulk_connections,
-        create_reservoirs,
-        initialize_reservoirs,
-        build_ct_dict,
+        Model,
+        Species2Species,
         add_carbonate_system_1,
         add_carbonate_system_2,
-        Species2Species,
-        ConnectionProperties,
+        create_bulk_connections,
+        initialize_reservoirs,
     )
 
     M = Model(
