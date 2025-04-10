@@ -34,7 +34,6 @@ from esbmtk import (
     add_carbonate_system_1,  # carbonate chemisrty
     add_carbonate_system_2,
     create_bulk_connections,  # some helper functions
-    create_reservoirs,
     initialize_reservoirs,
     build_ct_dict,
     data_summaries,
@@ -251,7 +250,6 @@ def initialize_model(rain_ratio, alpha, run_time, time_step):
         Q_,
         GasReservoir,
         create_bulk_connections,
-        create_reservoirs,
         initialize_reservoirs,
         build_ct_dict,
         add_carbonate_system_1,
