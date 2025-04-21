@@ -1,4 +1,10 @@
+"""Calculate the steady state concentrations for the Boudreau Model.
+
+Plot the results against published values.
+"""
+
 import boudreau_2010 as bd
+import numpy as np
 from esbmtk import carbonate_system_2_pp, data_summaries
 
 run_time = "1000 kyr"
@@ -45,10 +51,14 @@ data = [1952e-6, 2153e-6, 2291e-6, 2288e-6, 2345e-6, 2399e-6]
 
 # Add digitized data to model results
 # FIXME: This seems to have no effect
+
 v = 0
 u = 0
+
+axs = np.array(axs).reshape(4, 2)
 for i in range(2):
     for j in range(3):
+        print(f"j = {j}, i = {i}")
         d = data[u]
         axs[j, i].scatter(10, d, color=f"C{j}")
         u = u + 1
