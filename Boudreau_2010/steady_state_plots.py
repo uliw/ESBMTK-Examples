@@ -3,9 +3,17 @@
 Plot the results against published values.
 """
 
+import importlib.metadata
+
 import boudreau_2010 as bd
 import numpy as np
 from esbmtk import carbonate_system_2_pp, data_summaries
+from packaging import version
+
+current_version = importlib.metadata.version("esbmtk")
+min_required_version = "0.14.2"
+if version.parse(current_version) < version.parse(min_required_version):
+    print("Please update esbmtk")
 
 run_time = "1000 kyr"
 time_step = "100 yr"  # this is max timestep
@@ -58,7 +66,6 @@ u = 0
 axs = np.array(axs).reshape(4, 2)
 for i in range(2):
     for j in range(3):
-        print(f"j = {j}, i = {i}")
         d = data[u]
         axs[j, i].scatter(10, d, color=f"C{j}")
         u = u + 1
@@ -93,7 +100,7 @@ ks = "K0, K1, K2, KW, KB"
 kl = ks.split(", ")
 rl = [M.L_b, M.H_b, M.D_b]
 
-print(f"\nBox, {ks}, DIC[\mu{{}}mol/kg], TA[\mu{{}}mol/kg]")
+print(r"\nBox, {ks}, DIC[\mu{{}}mol/kg], TA[\mu{{}}mol/kg]")
 for b in rl:
     print(f"{b.name}, ", end="")
     for k in kl:
