@@ -13,7 +13,7 @@ from packaging import version
 current_version = importlib.metadata.version("esbmtk")
 min_required_version = "0.14.2"
 if version.parse(current_version) < version.parse(min_required_version):
-    print("Please update esbmtk")
+    raise ValueError("Please update esbmtk to version 0.14.2 or higher")
 
 run_time = "1000 kyr"
 time_step = "100 yr"  # this is max timestep

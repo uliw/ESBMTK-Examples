@@ -2,7 +2,7 @@
 
 This repo holds example code for the [Earth Science Box Modeling Toolkit.](https://github.com/uliw/esbmtk) Please see the <https://esbmtk.readthedocs.io/en/latest/> for ESBMTK installation and usage instruction.
 
-To run these examples, you will need at least ESBMTK 0.14.1.x
+To run these examples, you will need at least ESBMTK 0.14.2.x
 
 Download the examples via:
 
