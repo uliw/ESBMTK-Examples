@@ -38,6 +38,6 @@ ConnectionProperties(  # thermohaline upwelling
     scale="20 Sv",
     id="upwelling",
 )
-M.run()
+M.run(method="BDF")
 
 M.plot([M.S_b.O2, M.D_b.O2], fn="iso_1.png")

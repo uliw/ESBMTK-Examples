@@ -53,4 +53,4 @@ ConnectionProperties(  # thermohaline upwelling
     id="PIC",
 )
 
-M.run()
+M.run(method="BDF")

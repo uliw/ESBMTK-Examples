@@ -34,6 +34,6 @@ Species2Species(  # Ocean to atmosphere F8
     ctype="gasexchange",
     id="ex_O2",
 )
-M.run()
+M.run(method="BDF")
 
 M.plot([M.S_b.O2, M.O2_At], fn="iso_4.png")
