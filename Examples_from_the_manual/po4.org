@@ -1,0 +1,127 @@
+#+Title: ESBMTK example of a simple P-cycle model
+
+* Install esbmtk in your Jupyter instance
+
+#+BEGIN_SRC jupyter-python
+python -m pip install esbmtk
+#+END_SRC
+
+Select the above cell with a mouse click and use =Run= in the above menu to execute it (ctrl + enter will do the same)
+
+* A simple P-cycle model 
+A simple model of the marine P-cycle would consider the delivery of P from weathering, the burial of P in the sediments, the thermohaline transport of dissolved PO_4 as well as the export of P in the form of sinking organic matter (POP). The concentration in the respective surface and deep water boxes is then the sum of the respective fluxes (see Fig. 1). The model parameters are taken from Glover 2011, Modeling Methods in the Marine Sciences.
+#+attr_org: :width 300
+#+attr_rst: :width 400
+#+attr_latex: :width 0.5\textwidth
+#+name: pcycle
+#+caption: A two-box model of the marine P-cycle. F_w = weathering
+#+caption: F_u = upwelling, F_d = downwelling, F_{POP} = particulate 
+#+caption: organic phosphor, F_b = burial.
+[[./mpc.png]]
+
+If we define equations that control the export of particulate P (F_{POP}) as a fraction of the upwelling P (F_u), and the burial of P (F_b) as a fraction of (F_{POP}), we express this model as coupled ordinary differential equations (ODE, or initial value problem):
+
+\[
+\frac{d[PO_{4}]_{S}}{dt} = \frac{F_w + F_u - F_d - F_{POP}}{V_S}
+\]
+
+and for the deep ocean, 
+
+\[
+\frac{d[PO_{4}]_{D}}{dt}= \frac{F_{POP} + F_d - F_u - F_b}{V_D}
+\]
+
+** Implementing the P-cycle with ESBMTK
+While ESBMTK provides abstractions to efficiently define complex models, the following section will use the basic ESBMTK classes to define the above model. While quite verbose, it demonstrates the design philosophy behind ESBMTK. More complex approaches are described further down. For the sake of brevity, the following code box contains the entire model code. For a more detailed walk-through, please see  https://esbmtk.readthedocs.io/en/latest/manual/manual-1.html#a-simple-example
+
+#+BEGIN_SRC jupyter-python
+from esbmtk import (
+    ConnectionProperties,  # the connection class
+    Model,  # the model class
+    Reservoir,  # the reservoir class
+    SinkProperties,  # sink class
+    SourceProperties,  # the source class
+    data_summaries,
+)
+
+# define the basic model parameters
+M = Model(
+    stop="2 Myr",  # end time of model
+    max_timestep="1 kyr",  # upper limit of time step
+    element=["Phosphor"],  # list of element definitions
+)
+
+# boundary conditions
+F_w = M.set_flux("45 Gmol", "year", M.P)  # P @280 ppm (Filipelli 2002)
+F_b = 0.01  # About 1% of the exported P is buried in the deep ocean
+thc = "20*Sv"  # Thermohaline circulation in Sverdrup
+
+# Source definitions
+SourceProperties(
+    name="weathering",
+    species=[M.PO4],
+)
+SinkProperties(
+    name="burial",
+    species=[M.PO4],
+)
+# reservoir definitions
+Reservoir(
+    name="Surface_box",  # box name
+    volume="3E16 m**3",  # surface box volume
+    concentration={M.PO4: "0 umol/l"},  # initial concentration
+)
+Reservoir(
+    name="Deep_box",  # box name
+    volume="100E16 m**3",  # deeb box volume
+    concentration={M.PO4: "0 umol/l"},  # initial concentration
+)
+
+# define connections
+ConnectionProperties(
+    ctype="regular",
+    source=M.weathering,  # source of flux
+    sink=M.Surface_box,  # target of flux
+    rate=F_w,  # rate of flux
+    id="river",  # connection id
+)
+ConnectionProperties(  # thermohaline downwelling
+    ctype="scale_with_concentration",
+    source=M.Surface_box,  # source of flux
+    sink=M.Deep_box,  # target of flux
+    scale=thc,
+    id="downwelling",
+)
+ConnectionProperties(  # thermohaline upwelling
+    ctype="scale_with_concentration",
+    source=M.Deep_box,  # source of flux
+    sink=M.Surface_box,  # target of flux
+    scale=thc,
+    id="upwelling",
+)
+# define processes
+ConnectionProperties(  #
+    ctype="scale_with_flux",
+    source=M.Surface_box,  # source of flux
+    sink=M.Deep_box,  # target of flux
+    ref_flux="upwelling",
+    scale=0.8,
+    # species=[M.PO4],  # apply this only to PO4
+    id="primary_production",
+)
+ConnectionProperties(  #
+    ctype="scale_with_flux",
+    source=M.Deep_box,  # source of flux
+    sink=M.burial,  # target of flux
+    ref_flux="primary_production",
+    scale=F_b,
+    id="burial",
+    species=[M.PO4],
+)
+
+M.run()
+
+M.plot([*data_summaries(M, [M.PO4], [M.Surface_box, M.Deep_box], M)], fn="po4_1.pdf")
+#+END_SRC
+
+Run this code by selecting the above cell with a mouse click and use =Run= in the above menu to execute it (ctrl + enter will do the same). Once the cell is selected, you can also edit the text. E.g., try to increase the burial fraction to 0.02.
