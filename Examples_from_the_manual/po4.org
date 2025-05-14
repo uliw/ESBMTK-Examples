@@ -1,5 +1,10 @@
 #+Title: ESBMTK example of a simple P-cycle model
 
+This is a bar-bones Jupyter Notebook showing the use of esbmtk on a Jupyter Server. Additional information is available at:
+- [[https://www.datacamp.com/tutorial/tutorial-jupyter-notebook][Using Jupyter Notebooks]]
+- [[https://esbmtk.readthedocs.io/en/latest/][The ESBMTK documentation]]
+- [[https://gmd.copernicus.org/articles/18/1155/2025/][Wortmann et al., 2025]] 
+
 * Install esbmtk in your Jupyter instance
 
 #+BEGIN_SRC jupyter-python
