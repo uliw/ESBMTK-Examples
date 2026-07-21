@@ -114,11 +114,19 @@ def initialize_model(high_lat_piston, high_lat_PO4_export, T_surf, T_deep, thc, 
     M.high_lat_piston = high_lat_piston
     M.high_lat_PO4_export = high_lat_PO4_export
 
+    fn = "esbmtk/models/LOSCAR_sheets/LOSCAR_sheets.xlsx"
+
+    cwd: pl.Path = pl.Path.cwd() # get the current working directory
+    fqfn: pl.Path = cwd / fn # get the current working directory
+
+    if not fqfn.exists(): # check if file exists  
+        raise FileNotFoundError(f"Cannot find file {fqfn}")
+
     #------Create reservoirs and transport matrix from excel------#
 
     species_list = create_reservoirs_from_excel(
         M, #Model object
-        "/home/atlas/esbmtk/esbmtk/models/LOSCAR_sheets/LOSCAR_sheets.xlsx", #specify file path
+        fqfn, #specify file path
         sheet_name="reservoirs" #specify worksheet (default = "reservoirs")
     )
 
@@ -127,13 +135,13 @@ def initialize_model(high_lat_piston, high_lat_PO4_export, T_surf, T_deep, thc, 
 
     create_gas_reservoirs_from_excel(
         M, #Model object
-        "/home/atlas/esbmtk/esbmtk/models/LOSCAR_sheets/LOSCAR_sheets.xlsx", #specify file path
+        fqfn, #specify file path
         sheet_name="gas_reservoirs" #specify worksheet (default = "gas_reservoirs")
     )
 
     create_transport_matrix_from_excel(
         M, #Model object
-        "/home/atlas/esbmtk/esbmtk/models/LOSCAR_sheets/LOSCAR_sheets.xlsx", #specify file path
+        fqfn, #specify file path
         species_list, #list of species being transported via advection and mixing
         sheet_name="transport_matrix" #specify worksheet (default = "transport_matrix")
     )
@@ -381,7 +389,7 @@ def initialize_model(high_lat_piston, high_lat_PO4_export, T_surf, T_deep, thc, 
     """
     create_gas_exchange_connections_from_excel(
         M, #Model object
-        "/home/atlas/esbmtk/esbmtk/models/LOSCAR_sheets/LOSCAR_sheets.xlsx", #specify file path
+        fqfn, #specify file path
         sheet_name="gas_exchange" #specify worksheet (default = "gas_exchange")
     )
     
