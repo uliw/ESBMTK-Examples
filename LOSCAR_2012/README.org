@@ -1,0 +1,6 @@
+* LOSCAR Model 
+
+This directory contains the ESBMTK implementation of [[https://doi.org/10.5194/gmd-5-149-2012][Zeebe (2012)'s LOSCAR model]].
+
+- =LOSCAR_modern_example.py= is the modern (pre-industrial) model definition.
+- =LOSCAR_sheets.xlsx= contains worksheets describing model configuration information used to initialize the model.

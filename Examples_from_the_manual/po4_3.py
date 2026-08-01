@@ -7,6 +7,7 @@ from esbmtk import (
     data_summaries,
     Q_,
 )
+
 M = Model(
     stop="6 Myr",  # end time of model
     max_timestep="1 kyr",  # upper limit of time step
@@ -22,21 +23,21 @@ Redfield = 106 # C:P
 
 SourceProperties(
     name="weathering",
-    species=[M.PO4, M.DIC],
+    species=[M.PO4, M.DIC], #multi-species syntax
 )
 SinkProperties(
     name="burial",
-    species=[M.PO4, M.DIC],
+    species=[M.PO4, M.DIC], #multi-species syntax
 )
 Reservoir(
     name="S_b",
     volume="3E16 m**3",  # surface box volume
-    concentration={M.DIC: "0 umol/l", M.PO4: "0 umol/l"},
+    concentration={M.DIC: "0 umol/kg", M.PO4: "0 umol/kg"}, #multi-species syntax
 )
 Reservoir(
     name="D_b",
     volume="100E16 m**3",  # deep box volume
-    concentration={M.DIC: "0 umol/l", M.PO4: "0 umol/l"},
+    concentration={M.DIC: "0 umol/kg", M.PO4: "0 umol/kg"}, #multi-species syntax
 )
 
 ConnectionProperties(  # thermohaline downwelling
